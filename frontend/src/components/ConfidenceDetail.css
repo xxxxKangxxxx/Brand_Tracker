@@ -1,0 +1,511 @@
+.confidence-detail {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.detail-header {
+  margin-bottom: 2rem;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+}
+
+.back-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateX(-2px);
+}
+
+.back-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.header-content h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 0.5rem 0;
+}
+
+.header-content p {
+  font-size: 1.125rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
+/* 신뢰도 콘텐츠 */
+.confidence-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* 신뢰도 요약 통계 */
+.confidence-summary {
+  margin-bottom: 1rem;
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.summary-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.summary-card:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.summary-card.high {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.summary-card.medium {
+  border-color: rgba(245, 158, 11, 0.4);
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.summary-card.low {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.summary-icon {
+  width: 24px;
+  height: 24px;
+  color: #60a5fa;
+}
+
+.summary-card.high .summary-icon {
+  color: #10b981;
+}
+
+.summary-card.medium .summary-icon {
+  color: #f59e0b;
+}
+
+.summary-card.low .summary-icon {
+  color: #ef4444;
+}
+
+.summary-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.summary-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.summary-label {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* 품질 메트릭 */
+.quality-metrics h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 1.5rem 0;
+}
+
+.quality-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.quality-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 1.25rem;
+  transition: all 0.3s ease;
+}
+
+.quality-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.quality-item.excellent {
+  border-color: rgba(16, 185, 129, 0.6);
+  background: rgba(16, 185, 129, 0.15);
+}
+
+.quality-item.good {
+  border-color: rgba(34, 197, 94, 0.4);
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.quality-item.fair {
+  border-color: rgba(245, 158, 11, 0.4);
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.quality-item.poor {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.quality-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.quality-item.excellent .quality-icon {
+  color: #10b981;
+}
+
+.quality-item.good .quality-icon {
+  color: #22c55e;
+}
+
+.quality-item.fair .quality-icon {
+  color: #f59e0b;
+}
+
+.quality-item.poor .quality-icon {
+  color: #ef4444;
+}
+
+.quality-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.quality-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.quality-label {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.quality-percentage {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+}
+
+/* 브랜드별 신뢰도 분석 */
+.brand-confidence-analysis h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 1.5rem 0;
+}
+
+.brand-confidence-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.brand-confidence-item {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.brand-confidence-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* 브랜드 신뢰도 헤더 */
+.brand-confidence-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.brand-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.brand-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+}
+
+.brand-rank {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.confidence-score {
+  display: flex;
+  align-items: center;
+}
+
+.score-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.score-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* 신뢰도 통계 */
+.confidence-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.stat-icon {
+  width: 16px;
+  height: 16px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* 신뢰도 등급 분포 */
+.confidence-grade-distribution {
+  margin-bottom: 1.5rem;
+}
+
+.distribution-label {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+}
+
+.grade-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.grade-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.grade-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  width: 40px;
+  flex-shrink: 0;
+}
+
+.grade-progress {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.grade-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.grade-fill.high {
+  background: #10b981;
+}
+
+.grade-fill.medium {
+  background: #f59e0b;
+}
+
+.grade-fill.low {
+  background: #ef4444;
+}
+
+.grade-count {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+  width: 30px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* 신뢰도 품질 */
+.confidence-quality {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.quality-label {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.quality-badge {
+  font-weight: 600;
+}
+
+.consistency-info {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.75rem;
+}
+
+/* 빈 상태 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+}
+
+.empty-icon {
+  width: 64px;
+  height: 64px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 0.5rem 0;
+}
+
+.empty-state p {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .confidence-detail {
+    padding: 1rem;
+  }
+  
+  .summary-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .quality-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .brand-confidence-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .stat-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .grade-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .grade-progress {
+    width: 100%;
+  }
+  
+  .confidence-quality {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+} 

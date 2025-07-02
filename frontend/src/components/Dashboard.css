@@ -1,0 +1,356 @@
+.dashboard {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* 헤더 */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dashboard-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 0.5rem 0;
+  background: linear-gradient(135deg, #ffffff, #e2e8f0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dashboard-header p {
+  font-size: 1.125rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.analyzing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 8px;
+  color: #60a5fa;
+  font-weight: 500;
+}
+
+.analyzing-indicator .loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(96, 165, 250, 0.3);
+  border-top: 2px solid #60a5fa;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* 메트릭 그리드 */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+/* 차트 섹션 */
+.charts-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.chart-container {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.chart-container:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.chart-header {
+  margin-bottom: 1.5rem;
+}
+
+.chart-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 0.5rem 0;
+}
+
+.chart-icon {
+  width: 20px;
+  height: 20px;
+  color: #667eea;
+}
+
+.chart-header p {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+.chart-content {
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 타임라인 차트 전용 스타일 */
+.chart-container:has(.timeline-chart) .chart-content {
+  height: 450px;
+}
+
+/* 요약 섹션 */
+.summary-section {
+  grid-column: 1 / -1;
+}
+
+.summary-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.summary-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.summary-icon {
+  width: 18px;
+  height: 18px;
+  color: #667eea;
+}
+
+.summary-content {
+  display: grid;
+  grid-template-columns: 1.3fr 1.4fr 1fr 2.3fr;
+  gap: 0.75rem;
+  flex: 1;
+  max-width: 75%;
+  margin-left: auto;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 0.7rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  min-width: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+.summary-item .label {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 1;
+}
+
+.summary-item .value {
+  font-size: 0.9rem;
+  color: #ffffff;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 1;
+  margin-left: 0.5rem;
+  text-align: right;
+}
+
+/* 각 항목별 개별 스타일 */
+.summary-item:nth-child(1) .label,
+.summary-item:nth-child(2) .label {
+  max-width: 50%;
+}
+
+.summary-item:nth-child(1) .value,
+.summary-item:nth-child(2) .value {
+  max-width: 45%;
+}
+
+/* FPS 항목 (3번째) */
+.summary-item:nth-child(3) .label {
+  max-width: 40%;
+}
+
+.summary-item:nth-child(3) .value {
+  max-width: 55%;
+}
+
+/* 분석 완료 항목 (4번째) - 긴 텍스트 */
+.summary-item:nth-child(4) .label {
+  max-width: 35%;
+}
+
+.summary-item:nth-child(4) .value {
+  max-width: 60%;
+}
+
+/* 빈 상태 */
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+}
+
+.empty-content {
+  max-width: 400px;
+  padding: 2rem;
+}
+
+.empty-icon {
+  width: 64px;
+  height: 64px;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0 auto 1.5rem;
+}
+
+.empty-content h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 0.5rem 0;
+}
+
+.empty-content p {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0 0 2rem 0;
+}
+
+.start-analysis-btn {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border: none;
+  border-radius: 8px;
+  padding: 0.875rem 1.5rem;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.start-analysis-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+/* 반응형 */
+@media (max-width: 1024px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .dashboard-header h1 {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .metrics-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .chart-container {
+    padding: 1rem;
+  }
+  
+  .chart-content {
+    height: 250px;
+  }
+  
+  .summary-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .summary-content {
+    grid-template-columns: 1fr 1.5fr;
+    gap: 0.5rem;
+    max-width: 100%;
+    margin-left: 0;
+  }
+  
+  .summary-item {
+    padding: 0.5rem;
+  }
+  
+  .summary-item .label {
+    font-size: 0.7rem;
+  }
+  
+  .summary-item .value {
+    font-size: 0.7rem;
+  }
+  
+  .dashboard-header h1 {
+    font-size: 1.75rem;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+} 

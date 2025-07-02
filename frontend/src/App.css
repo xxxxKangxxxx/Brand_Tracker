@@ -1,0 +1,31 @@
+.app {
+  display: flex;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 280px;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.content-wrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1024px) {
+  .main-content {
+    margin-left: 0;
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 0.5rem;
+  }
+} 
