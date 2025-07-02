@@ -1,5 +1,5 @@
 import React from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 
 const TimelineChart = ({ data }) => {
   if (!data || Object.keys(data).length === 0) {
@@ -107,9 +107,9 @@ const TimelineChart = ({ data }) => {
   };
 
   return (
-    <div className="timeline-chart">
-      <ResponsiveContainer width="100%" height={350}>
-        <AreaChart data={timelineData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+    <div className="timeline-chart" style={{ overflowX: 'auto' }}>
+      <ResponsiveContainer width={480} height={350}>
+        <AreaChart data={timelineData} margin={{ top: 20, right: 5, left: 5, bottom: 5 }}>
           <defs>
             {brands.map((brand, index) => (
               <linearGradient key={brand} id={`gradient-${brand}`} x1="0" y1="0" x2="0" y2="1">
@@ -149,7 +149,6 @@ const TimelineChart = ({ data }) => {
               key={brand}
               type="monotone"
               dataKey={brand}
-              stackId="1"
               stroke={getColor(brand, index)}
               fill={`url(#gradient-${brand})`}
               strokeWidth={2}

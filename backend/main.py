@@ -40,6 +40,7 @@ class AnalysisResponse(BaseModel):
     brand_analysis: Dict
     total_analysis_time: float
     timestamp: str
+    analysis_settings: Dict
 
 @app.get("/")
 async def root():
@@ -93,7 +94,8 @@ async def analyze_youtube_video(request: YouTubeAnalysisRequest):
             "width": video_file_info.get("width", 1920),
             "height": video_file_info.get("height", 1080),
             "file_size": video_file_info.get("file_size", 0),
-            "duration": video_file_info.get("duration", video_info_raw.get("length", 0))
+            "duration": video_file_info.get("duration", video_info_raw.get("length", 0)),
+            "input_url": request.url
         }
         
         end_time = datetime.now()
@@ -114,7 +116,11 @@ async def analyze_youtube_video(request: YouTubeAnalysisRequest):
             video_info=video_info,
             brand_analysis=brand_analysis,
             total_analysis_time=analysis_time,
-            timestamp=datetime.now().isoformat()
+            timestamp=datetime.now().isoformat(),
+            analysis_settings={
+                "resolution": request.resolution,
+                "frame_interval": request.frame_interval
+            }
         )
         
         # 분석 결과 저장

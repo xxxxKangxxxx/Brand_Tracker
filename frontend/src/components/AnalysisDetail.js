@@ -4,7 +4,6 @@ import {
   ArrowLeft, 
   Clock, 
   Zap, 
-  Download, 
   Cpu, 
   HardDrive,
   BarChart3,

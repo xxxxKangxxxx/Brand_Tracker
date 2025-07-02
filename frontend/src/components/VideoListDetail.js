@@ -118,7 +118,15 @@ const VideoListDetail = ({ analysisHistory, onBack, onSelectVideo, onDeleteVideo
               </div>
               
               <div className="video-thumbnail">
-                <div className="play-overlay">
+                <div 
+                  className="play-overlay"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (video.video_info?.input_url) {
+                      window.open(video.video_info.input_url, '_blank');
+                    }
+                  }}
+                >
                   <Play className="play-icon" />
                 </div>
                 <div className="video-index">#{index + 1}</div>
@@ -139,7 +147,7 @@ const VideoListDetail = ({ analysisHistory, onBack, onSelectVideo, onDeleteVideo
                   <div className="detail-item">
                     <Monitor className="detail-icon" />
                     <span>
-                      해상도: {video.video_info?.width || 0} x {video.video_info?.height || 0}
+                      해상도: {video.analysis_settings?.resolution || '알 수 없음'}
                     </span>
                   </div>
                   <div className="detail-item">

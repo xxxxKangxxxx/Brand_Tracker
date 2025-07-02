@@ -6,12 +6,10 @@ import {
   Award, 
   Target, 
   BarChart3,
-  PieChart,
   AlertTriangle,
   CheckCircle,
   XCircle,
   Eye,
-  Zap,
   Activity
 } from 'lucide-react';
 import './ConfidenceDetail.css';
@@ -51,7 +49,6 @@ const ConfidenceDetail = ({ analysisHistory, onBack }) => {
 
     const brandConfidenceData = {};
     const allConfidences = [];
-    let totalDetections = 0;
 
     // 모든 분석 결과에서 신뢰도 데이터 수집
     analysisHistory.forEach((analysis, videoIndex) => {
@@ -77,7 +74,6 @@ const ConfidenceDetail = ({ analysisHistory, onBack }) => {
             const confidence = data.average_confidence * 100;
             brand.confidences.push(confidence);
             allConfidences.push(confidence);
-            totalDetections++;
 
             // 신뢰도 등급별 카운트
             if (confidence >= 80) brand.highCount++;
@@ -90,7 +86,6 @@ const ConfidenceDetail = ({ analysisHistory, onBack }) => {
             data.detections.forEach(detection => {
               const confidence = detection.confidence * 100;
               allConfidences.push(confidence);
-              totalDetections++;
             });
           }
         });

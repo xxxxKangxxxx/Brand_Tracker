@@ -53,8 +53,8 @@ const BrandChart = ({ data }) => {
   return (
     <div className="brand-chart">
       {/* 바 차트 */}
-      <div className="chart-section">
-        <ResponsiveContainer width="100%" height={200}>
+      <div className="chart-section" style={{ overflowX: 'auto' }}>
+        <ResponsiveContainer width={480} height={200}>
           <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
             <XAxis 
@@ -74,7 +74,7 @@ const BrandChart = ({ data }) => {
 
       {/* 파이 차트 */}
       <div className="chart-section">
-        <ResponsiveContainer width="100%" height={100}>
+        <ResponsiveContainer width="100%" height={150}>
           <PieChart>
             <Pie
               data={chartData}

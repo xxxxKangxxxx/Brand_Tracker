@@ -10,7 +10,7 @@ class LogoDetectionService:
     def __init__(self):
         self.model = None
         self.model_path = "models/logo_detection.pt"
-        self.confidence_threshold = 0.5
+        self.confidence_threshold = 0.7
         self.brand_classes = {
             0: "coca-cola",
             1: "pepsi", 

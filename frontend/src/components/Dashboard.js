@@ -30,7 +30,6 @@ const Dashboard = ({ analysisResults, analysisHistory, isAnalyzing }) => {
     
     if (totalVideos === 0) return defaultMetrics;
 
-    let totalBrands = 0;
     let totalAnalysisTime = 0;
     let totalConfidence = 0;
     let totalAppearances = 0;

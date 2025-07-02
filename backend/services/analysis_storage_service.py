@@ -65,7 +65,8 @@ class AnalysisStorageService:
                 "video_info": analysis_data.get("video_info", {}),
                 "brand_analysis": analysis_data.get("brand_analysis", {}),
                 "total_analysis_time": analysis_data.get("total_analysis_time", 0),
-                "statistics": self._calculate_statistics(analysis_data.get("brand_analysis", {}))
+                "statistics": self._calculate_statistics(analysis_data.get("brand_analysis", {})),
+                "analysis_settings": analysis_data.get("analysis_settings", {})
             }
             
             # 새 분석 결과 추가
