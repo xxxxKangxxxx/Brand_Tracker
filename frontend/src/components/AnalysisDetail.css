@@ -12,9 +12,9 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #ffffff;
+  background: #ffffff;
+  border: 1px solid #dee2e6;
+  color: #495057;
   padding: 0.75rem 1rem;
   border-radius: 8px;
   cursor: pointer;
@@ -24,8 +24,8 @@
 }
 
 .back-button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: #f8f9fa;
+  border-color: #adb5bd;
   transform: translateX(-2px);
 }
 
@@ -37,13 +37,13 @@
 .header-content h1 {
   font-size: 2rem;
   font-weight: 700;
-  color: #ffffff;
+  color: #2d3436;
   margin: 0 0 0.5rem 0;
 }
 
 .header-content p {
   font-size: 1.125rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: #6c757d;
   margin: 0;
 }
 
@@ -69,23 +69,23 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #ffffff;
+  border: 1px solid #dee2e6;
   border-radius: 12px;
   padding: 1.5rem;
   transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .summary-card:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: #f8f9fa;
+  border-color: #adb5bd;
 }
 
 .summary-icon {
   width: 24px;
   height: 24px;
-  color: #60a5fa;
+  color: #3b82f6;
 }
 
 .summary-info {
@@ -97,19 +97,19 @@
 .summary-value {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #ffffff;
+  color: #2d3436;
 }
 
 .summary-label {
   font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: #6c757d;
 }
 
 /* 성능 개요 */
 .performance-overview h2 {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #ffffff;
+  color: #2d3436;
   margin: 0 0 1.5rem 0;
 }
 
@@ -123,17 +123,17 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #ffffff;
+  border: 1px solid #dee2e6;
   border-radius: 12px;
   padding: 1.25rem;
   transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .metric-item:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: #f8f9fa;
+  border-color: #adb5bd;
 }
 
 .metric-icon {
@@ -150,20 +150,20 @@
 
 .metric-label {
   font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: #6c757d;
 }
 
 .metric-value {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #ffffff;
+  color: #2d3436;
 }
 
 /* 영상별 성능 리스트 */
 .video-performance-list h2 {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #ffffff;
+  color: #2d3436;
   margin: 0 0 1.5rem 0;
 }
 
@@ -174,19 +174,19 @@
 }
 
 .performance-item {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #ffffff;
+  border: 1px solid #dee2e6;
   border-radius: 16px;
   padding: 1.5rem;
   transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .performance-item:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: #f8f9fa;
+  border-color: #adb5bd;
   transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* 성능 헤더 */
@@ -206,13 +206,13 @@
 .video-title {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #ffffff;
+  color: #2d3436;
   margin: 0;
 }
 
 .analysis-date {
   font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: #6c757d;
 }
 
 .efficiency-badge {
@@ -255,26 +255,26 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: #f8f9fa;
   border-radius: 8px;
 }
 
 .stat-icon {
   width: 16px;
   height: 16px;
-  color: rgba(255, 255, 255, 0.6);
+  color: #6c757d;
 }
 
 .stat-label {
   font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: #6c757d;
   flex: 1;
 }
 
 .stat-value {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #ffffff;
+  color: #2d3436;
 }
 
 /* 속도 시각화 */
@@ -291,18 +291,18 @@
 
 .speed-label {
   font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.8);
+  color: #495057;
   font-weight: 500;
 }
 
 .efficiency-ratio {
   font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: #6c757d;
 }
 
 .speed-bar {
   height: 8px;
-  background: rgba(255, 255, 255, 0.1);
+  background: #e9ecef;
   border-radius: 4px;
   overflow: hidden;
 }
@@ -325,16 +325,16 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 0.75rem;
-  background: rgba(16, 185, 129, 0.2);
-  border: 1px solid rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
   border-radius: 8px;
   font-size: 0.75rem;
   color: #10b981;
 }
 
 .stage-item.completed {
-  background: rgba(16, 185, 129, 0.2);
-  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.3);
   color: #10b981;
 }
 
@@ -351,29 +351,29 @@
   justify-content: center;
   padding: 4rem 2rem;
   text-align: center;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #ffffff;
+  border: 1px solid #dee2e6;
   border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .empty-icon {
   width: 64px;
   height: 64px;
-  color: rgba(255, 255, 255, 0.4);
+  color: #adb5bd;
   margin-bottom: 1rem;
 }
 
 .empty-state h3 {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #ffffff;
+  color: #495057;
   margin: 0 0 0.5rem 0;
 }
 
 .empty-state p {
   font-size: 1rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: #6c757d;
   margin: 0;
 }
 
@@ -409,4 +409,4 @@
   .processing-stages {
     justify-content: center;
   }
-} 
+}

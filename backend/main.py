@@ -7,6 +7,8 @@ import json
 from typing import Dict, List, Optional
 import asyncio
 from datetime import datetime
+import hashlib
+import secrets
 
 from .services.youtube_service import YouTubeService
 from .services.logo_detection_service import LogoDetectionService
@@ -30,6 +32,30 @@ logo_detection_service = LogoDetectionService()
 video_processing_service = VideoProcessingService()
 storage_service = AnalysisStorageService()
 
+# 사용자 데이터 파일 경로
+USERS_FILE = "users.json"
+
+# 사용자 데이터 로드/저장 함수
+def load_users():
+    """사용자 데이터를 파일에서 로드합니다."""
+    if os.path.exists(USERS_FILE):
+        with open(USERS_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return {}
+
+def save_users(users):
+    """사용자 데이터를 파일에 저장합니다."""
+    with open(USERS_FILE, 'w', encoding='utf-8') as f:
+        json.dump(users, f, ensure_ascii=False, indent=2)
+
+def hash_password(password: str) -> str:
+    """비밀번호를 해시화합니다."""
+    return hashlib.sha256(password.encode()).hexdigest()
+
+def generate_token() -> str:
+    """간단한 세션 토큰을 생성합니다."""
+    return secrets.token_urlsafe(32)
+
 class YouTubeAnalysisRequest(BaseModel):
     url: str
     resolution: str = "360p"
@@ -42,13 +68,109 @@ class AnalysisResponse(BaseModel):
     timestamp: str
     analysis_settings: Dict
 
+class RegisterRequest(BaseModel):
+    username: str
+    password: str
+    user_type: str  # "creator" or "company"
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+class AuthResponse(BaseModel):
+    status: str
+    message: str
+    token: Optional[str] = None
+    user: Optional[Dict] = None
+
 @app.get("/")
 async def root():
     return {"message": "브랜드 추적 시스템 API가 실행 중입니다!"}
 
+@app.post("/auth/register", response_model=AuthResponse)
+async def register(request: RegisterRequest):
+    """회원가입을 처리합니다."""
+    try:
+        # 사용자 타입 검증
+        if request.user_type not in ["creator", "company"]:
+            raise HTTPException(status_code=400, detail="사용자 타입은 'creator' 또는 'company'여야 합니다.")
+        
+        # 사용자 데이터 로드
+        users = load_users()
+        
+        # 중복 확인
+        if request.username in users:
+            raise HTTPException(status_code=400, detail="이미 존재하는 사용자명입니다.")
+        
+        # 비밀번호 해시화
+        hashed_password = hash_password(request.password)
+        
+        # 새 사용자 저장
+        users[request.username] = {
+            "username": request.username,
+            "password": hashed_password,
+            "user_type": request.user_type,
+            "created_at": datetime.now().isoformat()
+        }
+        
+        save_users(users)
+        
+        print(f"✅ 새 사용자 등록: {request.username} ({request.user_type})")
+        
+        return AuthResponse(
+            status="success",
+            message="회원가입이 완료되었습니다."
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ 회원가입 오류: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"회원가입 중 오류가 발생했습니다: {str(e)}")
+
+@app.post("/auth/login", response_model=AuthResponse)
+async def login(request: LoginRequest):
+    """로그인을 처리합니다."""
+    try:
+        # 사용자 데이터 로드
+        users = load_users()
+        
+        # 사용자 확인
+        if request.username not in users:
+            raise HTTPException(status_code=401, detail="아이디 또는 비밀번호가 올바르지 않습니다.")
+        
+        user = users[request.username]
+        
+        # 비밀번호 확인
+        hashed_password = hash_password(request.password)
+        if user["password"] != hashed_password:
+            raise HTTPException(status_code=401, detail="아이디 또는 비밀번호가 올바르지 않습니다.")
+        
+        # 토큰 생성
+        token = generate_token()
+        
+        print(f"✅ 로그인 성공: {request.username} ({user['user_type']})")
+        
+        return AuthResponse(
+            status="success",
+            message="로그인 성공",
+            token=token,
+            user={
+                "username": user["username"],
+                "user_type": user["user_type"]
+            }
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ 로그인 오류: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"로그인 중 오류가 발생했습니다: {str(e)}")
+
 @app.post("/analyze/youtube", response_model=AnalysisResponse)
 async def analyze_youtube_video(request: YouTubeAnalysisRequest):
     """유튜브 영상을 분석하여 브랜드 로고를 탐지합니다."""
+    video_path = None  # finally에서 사용하기 위해 초기화
     try:
         start_time = datetime.now()
         
@@ -101,11 +223,6 @@ async def analyze_youtube_video(request: YouTubeAnalysisRequest):
         end_time = datetime.now()
         analysis_time = (end_time - start_time).total_seconds()
         
-        # 임시 파일 정리
-        if os.path.exists(video_path):
-            os.remove(video_path)
-            print("🗑️ 임시 파일 정리 완료")
-        
         detected_brands = len(brand_analysis)
         total_detections = sum(brand_data.get("appearances", 0) for brand_data in brand_analysis.values())
         
@@ -133,10 +250,20 @@ async def analyze_youtube_video(request: YouTubeAnalysisRequest):
     except Exception as e:
         print(f"❌ YouTube 분석 오류: {str(e)}")
         raise HTTPException(status_code=500, detail=f"분석 중 오류가 발생했습니다: {str(e)}")
+    
+    finally:
+        # 항상 임시 파일 정리 (성공/실패 무관)
+        if video_path and os.path.exists(video_path):
+            try:
+                os.remove(video_path)
+                print("🗑️ 임시 파일 정리 완료")
+            except Exception as cleanup_error:
+                print(f"⚠️ 임시 파일 정리 실패: {cleanup_error}")
 
 @app.post("/analyze/upload")
 async def analyze_uploaded_video(file: UploadFile = File(...)):
     """업로드된 영상 파일을 분석하여 브랜드 로고를 탐지합니다."""
+    file_path = None  # finally에서 사용하기 위해 초기화
     try:
         start_time = datetime.now()
         
@@ -155,16 +282,16 @@ async def analyze_uploaded_video(file: UploadFile = File(...)):
         end_time = datetime.now()
         analysis_time = (end_time - start_time).total_seconds()
         
-        # 임시 파일 정리
-        if os.path.exists(file_path):
-            os.remove(file_path)
-        
         # 분석 결과 구성
         analysis_result = AnalysisResponse(
             video_info=video_info,
             brand_analysis=brand_analysis,
             total_analysis_time=analysis_time,
-            timestamp=datetime.now().isoformat()
+            timestamp=datetime.now().isoformat(),
+            analysis_settings={
+                "resolution": "original",
+                "frame_interval": 0.5
+            }
         )
         
         # 분석 결과 저장
@@ -176,6 +303,15 @@ async def analyze_uploaded_video(file: UploadFile = File(...)):
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"분석 중 오류가 발생했습니다: {str(e)}")
+    
+    finally:
+        # 항상 임시 파일 정리 (성공/실패 무관)
+        if file_path and os.path.exists(file_path):
+            try:
+                os.remove(file_path)
+                print("🗑️ 업로드 임시 파일 정리 완료")
+            except Exception as cleanup_error:
+                print(f"⚠️ 업로드 임시 파일 정리 실패: {cleanup_error}")
 
 @app.get("/models/status")
 async def get_model_status():

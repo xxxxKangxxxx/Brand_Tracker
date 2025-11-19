@@ -10,7 +10,7 @@ class LogoDetectionService:
     def __init__(self):
         self.model = None
         self.model_path = "models/logo_detection.pt"
-        self.confidence_threshold = 0.7
+        self.confidence_threshold = 0.5  
         self.brand_classes = {
             0: "coca-cola",
             1: "pepsi", 
@@ -71,8 +71,14 @@ class LogoDetectionService:
     def _detect_logos_sync(self, frames: List[Tuple[float, np.ndarray]]) -> List[Dict]:
         """동기적으로 로고를 탐지합니다."""
         detection_results = []
+        total_frames = len(frames)
+        print(f"🔍 총 {total_frames}개 프레임에서 로고 탐지 시작...")
         
-        for timestamp, frame in frames:
+        for idx, (timestamp, frame) in enumerate(frames, 1):
+            # 10프레임마다 진행 상황 출력
+            if idx % 10 == 0:
+                print(f"⏳ 진행 중... {idx}/{total_frames} ({idx/total_frames*100:.1f}%)")
+            
             try:
                 # YOLO 모델로 탐지 실행
                 results = self.model(frame, conf=self.confidence_threshold, verbose=False)
@@ -109,6 +115,8 @@ class LogoDetectionService:
                 print(f"프레임 {timestamp} 탐지 오류: {str(e)}")
                 continue
         
+        total_detections = sum(len(result['detections']) for result in detection_results)
+        print(f"✅ 로고 탐지 완료: 총 {total_detections}개 탐지")
         return detection_results
     
     def _map_class_to_brand(self, class_id: int) -> str:

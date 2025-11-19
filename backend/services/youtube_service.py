@@ -30,31 +30,63 @@ class YouTubeService:
             filename = f"video_{file_id}.%(ext)s"
             filepath = os.path.join(self.download_dir, filename)
             
-            # 해상도에 따른 품질 설정
-            quality_map = {
-                "360p": "best[height<=360]",
-                "480p": "best[height<=480]",
-                "720p": "best[height<=720]",
-                "1080p": "best[height<=1080]"
-            }
+            # SABR 스트리밍 문제 회피: 여러 클라이언트 시도
+            # iOS와 Android 클라이언트는 SABR 제한이 없어서 안정적
             
-            format_selector = quality_map.get(resolution, "best[height<=360]")
+            # 해상도별 높이 매핑
+            resolution_heights = {
+                '360p': 360,
+                '480p': 480,
+                '720p': 720,
+                '1080p': 1080
+            }
+            height = resolution_heights.get(resolution, 720)  # 기본값 720p
             
             # yt-dlp 옵션 설정
+            print(f"⚙️ 다운로드 설정: {resolution} 해상도 (최대 높이: {height}px)")
             ydl_opts = {
-                'format': f'{format_selector}/best',
+                # 해상도 제한 적용
+                'format': f'best[height<={height}]',
                 'outtmpl': filepath,
                 'noplaylist': True,
+                'nocheckcertificate': True,
+                'quiet': False,
+                'no_warnings': False,
+                'socket_timeout': 60,  # 60초 타임아웃
+                # 여러 클라이언트를 폴백으로 시도
+                'extractor_args': {
+                    'youtube': {
+                        'player_client': ['android', 'ios', 'web'],
+                        'player_skip': ['webpage'],
+                    }
+                },
+                # Fragmented 다운로드 방지
+                'noprogress': False,  # 진행률 표시
+                'fragment_retries': 10,
+                'skip_unavailable_fragments': False,
+                # Postprocessor 추가하여 완전한 파일 생성 보장
+                'postprocessors': [{
+                    'key': 'FFmpegVideoRemuxer',
+                    'preferedformat': 'mp4',
+                }],
             }
+            
+            print("📥 yt-dlp 다운로드 시작...")
             
             # 다운로드 실행
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 ydl.download([url])
             
-            # 실제 다운로드된 파일 경로 찾기
+            print("🔍 다운로드된 파일 찾는 중...")
+            # 실제 다운로드된 파일 경로 찾기 (.part 파일 제외)
             for file in os.listdir(self.download_dir):
-                if file.startswith(f"video_{file_id}"):
-                    return os.path.join(self.download_dir, file)
+                if file.startswith(f"video_{file_id}") and not file.endswith('.part'):
+                    file_path = os.path.join(self.download_dir, file)
+                    # 파일이 실제로 존재하고 읽을 수 있는지 확인
+                    if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
+                        file_size_mb = os.path.getsize(file_path) / (1024 * 1024)
+                        print(f"✅ 다운로드 완료: {file} ({file_size_mb:.2f}MB)")
+                        return file_path
             
             raise Exception("다운로드된 파일을 찾을 수 없습니다.")
             
@@ -75,23 +107,35 @@ class YouTubeService:
     def _get_video_info_sync(self, url: str) -> dict:
         """동기적으로 유튜브 영상 정보를 가져옵니다."""
         try:
+            print(f"🔍 유튜브 정보 추출 시작: {url}")
             ydl_opts = {
-                'quiet': True,
-                'no_warnings': True,
+                'quiet': False,  # 진행 상황 표시
+                'no_warnings': False,  # 경고 표시
+                'socket_timeout': 30,  # 30초 타임아웃
+                'noplaylist': True,  # 재생목록 무시, 단일 영상만
+                # 여러 클라이언트를 폴백으로 시도
+                'extractor_args': {
+                    'youtube': {
+                        'player_client': ['android', 'ios', 'web'],
+                        'player_skip': ['webpage'],
+                    }
+                },
             }
             
+            print("📡 유튜브 메타데이터 가져오는 중...")
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(url, download=False)
-                
-                return {
-                    "title": info.get('title', '제목 없음'),
-                    "author": info.get('uploader', '채널 없음'),
-                    "length": info.get('duration', 0),
-                    "views": info.get('view_count', 0),
-                    "description": (info.get('description', '')[:200] + "...") if len(info.get('description', '')) > 200 else info.get('description', ''),
-                    "thumbnail_url": info.get('thumbnail', ''),
-                    "publish_date": info.get('upload_date', None)
-                }
+            print("✅ 유튜브 정보 추출 완료")
+            
+            return {
+                "title": info.get('title', '제목 없음'),
+                "author": info.get('uploader', '채널 없음'),
+                "length": info.get('duration', 0),
+                "views": info.get('view_count', 0),
+                "description": (info.get('description', '')[:200] + "...") if len(info.get('description', '')) > 200 else info.get('description', ''),
+                "thumbnail_url": info.get('thumbnail', ''),
+                "publish_date": info.get('upload_date', None)
+            }
         except Exception as e:
             raise Exception(f"영상 정보 추출 오류: {str(e)}")
     

@@ -29,9 +29,9 @@ const Sidebar = ({ activeTab, setActiveTab, modelStatus }) => {
       <div className="sidebar-header">
         <div className="logo">
           <Brain className="logo-icon" />
-          <h2>Brand Tracker</h2>
+          <h2>AdLens</h2>
         </div>
-        <p className="subtitle">AI 브랜드 추적 시스템</p>
+        <p className="subtitle">AI 광고 분석 플랫폼</p>
       </div>
 
       {/* 네비게이션 메뉴 */}
@@ -109,8 +109,8 @@ const Sidebar = ({ activeTab, setActiveTab, modelStatus }) => {
 
       {/* 푸터 */}
       <div className="sidebar-footer">
-        <p>&copy; 2024 Brand Tracker</p>
-        <p>AI-Powered Analysis</p>
+        <p>&copy; 2025 AdLens</p>
+        <p>AI-Powered Advertising Analysis Platform</p>
       </div>
     </motion.aside>
   );

@@ -1,6 +1,6 @@
 {
-  "short_name": "Brand Tracker",
-  "name": "브랜드 추적 시스템",
+  "short_name": "AdLens",
+  "name": "AdLens - AI 광고 분석 플랫폼",
   "icons": [
     {
       "src": "favicon.ico",

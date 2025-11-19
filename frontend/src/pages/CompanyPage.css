@@ -1,0 +1,258 @@
+.company-page {
+  display: flex;
+  min-height: 100vh;
+  background: #f8f9fa;
+}
+
+.company-main-content {
+  flex: 1;
+  margin-left: 240px;
+  padding: 0;
+}
+
+/* 헤더 */
+.company-header {
+  background: white;
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #2d3436;
+  margin: 0;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* 검색바 */
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  border-radius: 24px;
+  padding: 0.5rem 1rem;
+  width: 400px;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.search-bar:focus-within {
+  background: white;
+  border-color: #007bff;
+  box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1);
+}
+
+.search-icon {
+  width: 20px;
+  height: 20px;
+  color: #adb5bd;
+  flex-shrink: 0;
+}
+
+.search-bar input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  padding: 0 0.75rem;
+  font-size: 14px;
+  color: #2d3436;
+}
+
+.search-bar input::placeholder {
+  color: #adb5bd;
+}
+
+.search-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.search-btn:hover {
+  background: #0056b3;
+  transform: translateY(-1px);
+}
+
+/* 알림 버튼 */
+.notification-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.notification-btn:hover {
+  background: #e9ecef;
+}
+
+.bell-icon {
+  width: 20px;
+  height: 20px;
+  color: #636e72;
+}
+
+/* 사용자 프로필 */
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.user-profile:hover {
+  background: #e9ecef;
+}
+
+.profile-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.profile-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2d3436;
+}
+
+.profile-type {
+  font-size: 11px;
+  color: #636e72;
+}
+
+.chevron-icon {
+  width: 16px;
+  height: 16px;
+  color: #636e72;
+}
+
+/* 크리에이터 컨테이너 */
+.creators-container {
+  padding: 2rem;
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #606060;
+  margin: 0 0 1.5rem 0;
+}
+
+/* Dashboard 컨테이너 */
+.dashboard-container {
+  padding: 2rem;
+  min-height: calc(100vh - 100px);
+}
+
+.dashboard-content-wrapper {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* 크리에이터 그리드 */
+.creators-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+/* 검색 결과 없음 */
+.no-results {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.no-results p {
+  font-size: 16px;
+  color: #636e72;
+}
+
+/* 반응형 */
+@media (max-width: 1400px) {
+  .creators-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+}
+
+@media (max-width: 1200px) {
+  .company-main-content {
+    margin-left: 240px;
+  }
+
+  .creators-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .company-main-content {
+    margin-left: 0;
+  }
+
+  .company-header {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .search-bar {
+    width: 100%;
+  }
+
+  .header-right {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .creators-container {
+    padding: 1rem;
+  }
+
+  .creators-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

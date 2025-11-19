@@ -1,0 +1,525 @@
+.creator-dashboard {
+  min-height: 100vh;
+  background: #f5f7fa;
+}
+
+/* 상단 네비게이션 */
+.creator-nav {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-brand .brand-icon {
+  width: 32px;
+  height: 32px;
+  color: #667eea;
+}
+
+.nav-brand h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0;
+}
+
+.nav-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.nav-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #667eea;
+  color: white;
+}
+
+.nav-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.nav-button.logout {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.nav-button.logout:hover {
+  background: #e5e7eb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.nav-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* 메인 콘텐츠 */
+.creator-content {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.creator-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* 환영 섹션 */
+.welcome-section {
+  text-align: left;
+  padding: 2rem 1rem;
+}
+
+.welcome-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0 0 12px 0;
+}
+
+.welcome-subtitle {
+  font-size: 24px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* 메인 통합 카드 */
+.main-unified-card {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+/* 메인 3컬럼 그리드 */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 0;
+}
+
+/* 섹션 구분선 */
+.info-section,
+.chart-section,
+.profile-actions-section {
+  padding: 0 1.5rem;
+}
+
+.info-section {
+  border-right: 1px solid rgba(229, 231, 235, 0.5);
+  padding-left: 0;
+}
+
+.chart-section {
+  border-right: 1px solid rgba(229, 231, 235, 0.5);
+}
+
+.profile-actions-section {
+  padding-right: 0;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0 0 1.5rem 0;
+}
+
+/* 좌측: 기본 정보 카드 */
+.info-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.info-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-icon {
+  width: 40px;
+  height: 40px;
+  color: white;
+}
+
+.info-details {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.info-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.info-value {
+  font-size: 14px;
+  color: #1a202c;
+  font-weight: 600;
+}
+
+.membership-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.membership-badge.pro {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.badge-icon {
+  width: 14px;
+  height: 14px;
+}
+
+/* 중앙: 차트 카드 */
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.chart-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.tab {
+  padding: 8px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab.active {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+.chart-content {
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 우측: 프로필 관리 섹션 */
+.profile-actions-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.action-section {
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 12px;
+}
+
+.action-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 1rem;
+}
+
+.action-icon {
+  width: 20px;
+  height: 20px;
+  color: #667eea;
+}
+
+.action-btn {
+  width: 100%;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 1rem;
+}
+
+.action-btn.primary {
+  background: #667eea;
+  color: white;
+}
+
+.action-btn.primary:hover {
+  background: #5568d3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.action-btn.secondary {
+  background: white;
+  color: #374151;
+  border: 2px solid #e5e7eb;
+}
+
+.action-btn.secondary:hover {
+  border-color: #cbd5e0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.action-stats {
+  display: flex;
+  justify-content: space-around;
+  gap: 1rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.stat-number {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a202c;
+}
+
+.milestone-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #fef3c7;
+  border-radius: 12px;
+}
+
+.milestone-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #92400e;
+}
+
+.milestone-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #92400e;
+}
+
+/* 하단 섹션 */
+.activity-section,
+.brand-analysis-section {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.section-header {
+  margin-bottom: 1.5rem;
+}
+
+.section-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0;
+}
+
+.section-icon {
+  width: 24px;
+  height: 24px;
+  color: #667eea;
+}
+
+.activity-card {
+  background: linear-gradient(135deg, #f0f4ff 0%, #f8f9ff 100%);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+}
+
+.activity-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.activity-message {
+  color: #4b5563;
+  font-size: 15px;
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0;
+}
+
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.button-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.analysis-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: #9ca3af;
+}
+
+.placeholder-icon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.analysis-placeholder p {
+  font-size: 15px;
+  margin: 0;
+}
+
+/* 반응형 */
+@media (max-width: 1200px) {
+  .main-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .info-section,
+  .chart-section,
+  .profile-actions-section {
+    padding: 1.5rem 0;
+    border-right: none;
+    border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+  }
+
+  .profile-actions-section {
+    border-bottom: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .creator-nav {
+    padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .nav-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .creator-content {
+    padding: 1rem;
+  }
+
+  .welcome-title {
+    font-size: 24px;
+  }
+
+  .welcome-subtitle {
+    font-size: 14px;
+  }
+
+  .nav-button span {
+    display: none;
+  }
+}

@@ -7,14 +7,15 @@ import {
   Target,
   BarChart3,
   PieChart,
-  Activity
+  Activity,
+  Play
 } from 'lucide-react';
 import MetricCard from './MetricCard';
 import BrandChart from './BrandChart';
 import TimelineChart from './TimelineChart';
 import './Dashboard.css';
 
-const Dashboard = ({ analysisResults, analysisHistory, isAnalyzing }) => {
+const Dashboard = ({ analysisResults, analysisHistory, isAnalyzing, onStartAnalysis }) => {
   // 기본 데이터 (분석 결과가 없을 때)
   const defaultMetrics = {
     totalVideos: 0,
@@ -92,7 +93,7 @@ const Dashboard = ({ analysisResults, analysisHistory, isAnalyzing }) => {
       {/* 헤더 */}
       <motion.div className="dashboard-header" variants={itemVariants}>
         <div>
-          <h1>브랜드 추적 대시보드</h1>
+          <h1>Dashboard</h1>
           <p>AI 기반 영상 내 브랜드 자동 탐지 및 분석</p>
         </div>
         <div className="header-actions">
@@ -101,6 +102,15 @@ const Dashboard = ({ analysisResults, analysisHistory, isAnalyzing }) => {
               <div className="loading-spinner"></div>
               <span>분석 중...</span>
             </div>
+          )}
+          {!isAnalyzing && (
+            <button 
+              className="start-analysis-btn"
+              onClick={onStartAnalysis}
+            >
+              <Play className="btn-icon" />
+              영상 분석하기
+            </button>
           )}
         </div>
       </motion.div>
@@ -229,7 +239,7 @@ const Dashboard = ({ analysisResults, analysisHistory, isAnalyzing }) => {
             <p>영상을 업로드하고 분석을 시작해보세요.</p>
             <button 
               className="start-analysis-btn"
-              onClick={() => window.dispatchEvent(new CustomEvent('switchToAnalysis'))}
+              onClick={onStartAnalysis}
             >
               분석 시작하기
             </button>

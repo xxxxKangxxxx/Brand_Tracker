@@ -88,3 +88,7 @@ models/*.onnx
 # 임시 파일
 temp_*
 *.tmp 
+
+# 깃허브 용량 초과 방지 및 프로젝트 파일 정리
+data/
+node_modules/

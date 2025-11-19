@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Upload, Youtube, Play, Settings } from 'lucide-react';
+import { Upload, Youtube, Play, Settings, ArrowLeft } from 'lucide-react';
 import './AnalysisPanel.css';
 
-const AnalysisPanel = ({ onAnalysisComplete, onAnalysisStart, isAnalyzing }) => {
+// 백엔드 API URL
+const API_BASE_URL = 'http://localhost:8000';
+
+const AnalysisPanel = ({ onAnalysisComplete, onAnalysisStart, isAnalyzing, onBackToDashboard }) => {
   const [activeTab, setActiveTab] = useState('youtube');
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [file, setFile] = useState(null);
@@ -21,7 +24,7 @@ const AnalysisPanel = ({ onAnalysisComplete, onAnalysisStart, isAnalyzing }) => 
     onAnalysisStart();
 
     try {
-      const response = await fetch('/analyze/youtube', {
+      const response = await fetch(`${API_BASE_URL}/analyze/youtube`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -69,7 +72,7 @@ const AnalysisPanel = ({ onAnalysisComplete, onAnalysisStart, isAnalyzing }) => 
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch('/analyze/upload', {
+      const response = await fetch(`${API_BASE_URL}/analyze/upload`, {
         method: 'POST',
         body: formData
       });
@@ -107,6 +110,14 @@ const AnalysisPanel = ({ onAnalysisComplete, onAnalysisStart, isAnalyzing }) => 
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
+      {/* 대시보드로 돌아가기 버튼 */}
+      {onBackToDashboard && (
+        <button className="back-to-dashboard-btn" onClick={onBackToDashboard}>
+          <ArrowLeft className="back-icon" />
+          대시보드로 돌아가기
+        </button>
+      )}
+
       <div className="panel-header">
         <h1>영상 분석</h1>
         <p>AI를 활용한 브랜드 자동 탐지 및 분석</p>

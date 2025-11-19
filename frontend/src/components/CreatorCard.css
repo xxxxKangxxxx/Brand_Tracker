@@ -1,0 +1,205 @@
+.creator-card {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.creator-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* 좋아요 버튼 */
+.like-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  z-index: 10;
+}
+
+.like-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+}
+
+.like-button.liked .heart-icon {
+  color: #007bff;
+}
+
+.heart-icon {
+  width: 20px;
+  height: 20px;
+  color: #007bff;
+  transition: all 0.2s;
+}
+
+/* 프로필 이미지 */
+.creator-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  border: 3px solid #f1f3f5;
+}
+
+.creator-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 이름 및 정보 */
+.creator-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2d3436;
+  margin: 0 0 4px 0;
+  text-align: center;
+}
+
+.creator-username {
+  font-size: 14px;
+  color: #636e72;
+  margin: 0 0 1rem 0;
+  text-align: center;
+}
+
+.creator-category {
+  font-size: 13px;
+  color: #636e72;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* 통계 */
+.creator-stats {
+  width: 100%;
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.stat-item {
+  margin-bottom: 0.75rem;
+}
+
+.stat-item:last-child {
+  margin-bottom: 0;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #636e72;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.stat-values {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-values span,
+.stat-item > span {
+  font-size: 12px;
+  color: #2d3436;
+  font-weight: 500;
+}
+
+/* 태그 */
+.creator-tags {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 1rem;
+  justify-content: center;
+}
+
+.tag {
+  font-size: 11px;
+  color: #007bff;
+  background: #e3f2fd;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+/* 액션 버튼 */
+.creator-actions {
+  width: 100%;
+  display: flex;
+  gap: 8px;
+}
+
+.btn-view-more,
+.btn-message {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-view-more {
+  background: #007bff;
+  color: white;
+}
+
+.btn-view-more:hover {
+  background: #0056b3;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.btn-message {
+  background: #2d3436;
+  color: white;
+}
+
+.btn-message:hover {
+  background: #1a1d1f;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(45, 52, 54, 0.3);
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .creator-card {
+    padding: 1rem;
+  }
+
+  .creator-avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .creator-name {
+    font-size: 16px;
+  }
+}
+
