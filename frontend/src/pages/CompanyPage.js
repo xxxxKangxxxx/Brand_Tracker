@@ -168,9 +168,18 @@ const CompanyPage = () => {
   // Dashboard 함수들
   const loadAnalysisHistory = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/analysis/history?limit=20`);
+      // 사용자 정보를 쿼리 파라미터로 전달
+      const username = user?.username;
+      const url = username 
+        ? `${API_BASE_URL}/analysis/history?limit=20&username=${encodeURIComponent(username)}`
+        : `${API_BASE_URL}/analysis/history?limit=20`;
+      
+      console.log(`📊 분석 히스토리 로드 중... (사용자: ${username})`);
+      const response = await fetch(url);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log(`✅ ${username}의 분석 결과 ${data.data?.length || 0}개 로드`);
         setAnalysisHistory(data.data || []);
         if (data.data && data.data.length > 0) {
           setAnalysisResults(data.data[0]);
@@ -202,7 +211,13 @@ const CompanyPage = () => {
 
   const handleDeleteAnalysis = async (analysisId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/analysis/${analysisId}`, {
+      // 사용자 정보를 쿼리 파라미터로 전달
+      const username = user?.username;
+      const url = username
+        ? `${API_BASE_URL}/analysis/${analysisId}?username=${encodeURIComponent(username)}`
+        : `${API_BASE_URL}/analysis/${analysisId}`;
+      
+      const response = await fetch(url, {
         method: 'DELETE'
       });
       
@@ -210,9 +225,11 @@ const CompanyPage = () => {
         if (analysisResults && analysisResults.id === analysisId) {
           setAnalysisResults(null);
         }
+        console.log('✅ 분석 결과 삭제 완료');
         loadAnalysisHistory();
       } else {
-        alert('분석 결과 삭제에 실패했습니다.');
+        const error = await response.json();
+        alert(error.detail || '분석 결과 삭제에 실패했습니다.');
       }
     } catch (error) {
       console.error('분석 결과 삭제 오류:', error);

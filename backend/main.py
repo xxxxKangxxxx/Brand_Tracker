@@ -168,13 +168,13 @@ async def login(request: LoginRequest):
         raise HTTPException(status_code=500, detail=f"로그인 중 오류가 발생했습니다: {str(e)}")
 
 @app.post("/analyze/youtube", response_model=AnalysisResponse)
-async def analyze_youtube_video(request: YouTubeAnalysisRequest):
+async def analyze_youtube_video(request: YouTubeAnalysisRequest, username: str = None):
     """유튜브 영상을 분석하여 브랜드 로고를 탐지합니다."""
     video_path = None  # finally에서 사용하기 위해 초기화
     try:
         start_time = datetime.now()
         
-        print(f"🎬 [YOUTUBE 분석] 요청받음: {request.url}")
+        print(f"🎬 [YOUTUBE 분석] 요청받음: {request.url} (사용자: {username})")
         print(f"🎬 [YOUTUBE 분석] 해상도: {request.resolution}, 프레임 간격: {request.frame_interval}초")
         
         # 1. 유튜브 영상 정보 먼저 가져오기
@@ -240,10 +240,10 @@ async def analyze_youtube_video(request: YouTubeAnalysisRequest):
             }
         )
         
-        # 분석 결과 저장
-        analysis_id = storage_service.save_analysis(analysis_result.dict(), "youtube")
+        # 분석 결과 저장 (사용자 정보 포함)
+        analysis_id = storage_service.save_analysis(analysis_result.dict(), "youtube", username)
         if analysis_id:
-            print(f"💾 분석 결과 저장됨: {analysis_id}")
+            print(f"💾 분석 결과 저장됨: {analysis_id} (사용자: {username})")
         
         return analysis_result
         
@@ -261,11 +261,13 @@ async def analyze_youtube_video(request: YouTubeAnalysisRequest):
                 print(f"⚠️ 임시 파일 정리 실패: {cleanup_error}")
 
 @app.post("/analyze/upload")
-async def analyze_uploaded_video(file: UploadFile = File(...)):
+async def analyze_uploaded_video(file: UploadFile = File(...), username: str = None):
     """업로드된 영상 파일을 분석하여 브랜드 로고를 탐지합니다."""
     file_path = None  # finally에서 사용하기 위해 초기화
     try:
         start_time = datetime.now()
+        
+        print(f"📤 [업로드 분석] 요청받음: {file.filename} (사용자: {username})")
         
         # 파일 저장
         file_path = f"temp_{file.filename}"
@@ -294,10 +296,10 @@ async def analyze_uploaded_video(file: UploadFile = File(...)):
             }
         )
         
-        # 분석 결과 저장
-        analysis_id = storage_service.save_analysis(analysis_result.dict(), "upload")
+        # 분석 결과 저장 (사용자 정보 포함)
+        analysis_id = storage_service.save_analysis(analysis_result.dict(), "upload", username)
         if analysis_id:
-            print(f"💾 업로드 분석 결과 저장됨: {analysis_id}")
+            print(f"💾 업로드 분석 결과 저장됨: {analysis_id} (사용자: {username})")
         
         return analysis_result
         
@@ -323,10 +325,11 @@ async def health_check():
     return {"status": "healthy", "timestamp": datetime.now().isoformat()}
 
 @app.get("/analysis/history")
-async def get_analysis_history(limit: int = 20):
+async def get_analysis_history(limit: int = 20, username: str = None):
     """분석 히스토리를 조회합니다."""
     try:
-        history = storage_service.get_analysis_history(limit)
+        print(f"📊 [히스토리 조회] 사용자: {username}, 제한: {limit}")
+        history = storage_service.get_analysis_history(limit, username)
         return {
             "status": "success",
             "data": history,
@@ -348,10 +351,10 @@ async def get_analysis_statistics():
         raise HTTPException(status_code=500, detail=f"통계 조회 오류: {str(e)}")
 
 @app.get("/analysis/{analysis_id}")
-async def get_analysis_by_id(analysis_id: str):
+async def get_analysis_by_id(analysis_id: str, username: str = None):
     """특정 ID의 분석 결과를 조회합니다."""
     try:
-        analysis = storage_service.get_analysis_by_id(analysis_id)
+        analysis = storage_service.get_analysis_by_id(analysis_id, username)
         if analysis:
             return {
                 "status": "success",
@@ -365,17 +368,18 @@ async def get_analysis_by_id(analysis_id: str):
         raise HTTPException(status_code=500, detail=f"분석 결과 조회 오류: {str(e)}")
 
 @app.delete("/analysis/{analysis_id}")
-async def delete_analysis(analysis_id: str):
+async def delete_analysis(analysis_id: str, username: str = None):
     """특정 분석 결과를 삭제합니다."""
     try:
-        success = storage_service.delete_analysis(analysis_id)
+        print(f"🗑️ [삭제 요청] 분석 ID: {analysis_id}, 사용자: {username}")
+        success = storage_service.delete_analysis(analysis_id, username)
         if success:
             return {
                 "status": "success",
                 "message": "분석 결과가 삭제되었습니다."
             }
         else:
-            raise HTTPException(status_code=404, detail="삭제할 분석 결과를 찾을 수 없습니다.")
+            raise HTTPException(status_code=404, detail="삭제할 분석 결과를 찾을 수 없거나 권한이 없습니다.")
     except HTTPException:
         raise
     except Exception as e:

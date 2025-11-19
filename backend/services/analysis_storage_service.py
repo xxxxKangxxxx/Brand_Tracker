@@ -49,7 +49,7 @@ class AnalysisStorageService:
         except Exception as e:
             print(f"데이터 저장 오류: {str(e)}")
     
-    def save_analysis(self, analysis_data: Dict, analysis_type: str = "youtube") -> str:
+    def save_analysis(self, analysis_data: Dict, analysis_type: str = "youtube", username: str = None) -> str:
         """분석 결과를 저장합니다."""
         try:
             data = self._load_data()
@@ -60,6 +60,7 @@ class AnalysisStorageService:
             # 분석 결과 데이터 구성
             analysis_record = {
                 "id": analysis_id,
+                "username": username,  # 사용자 정보 추가
                 "type": analysis_type,
                 "timestamp": datetime.now().isoformat(),
                 "video_info": analysis_data.get("video_info", {}),
@@ -84,7 +85,7 @@ class AnalysisStorageService:
             # 저장
             self._save_data(data)
             
-            print(f"💾 분석 결과 저장 완료: {analysis_id}")
+            print(f"💾 분석 결과 저장 완료: {analysis_id} (사용자: {username})")
             return analysis_id
             
         except Exception as e:
@@ -121,11 +122,16 @@ class AnalysisStorageService:
             "average_confidence": round(avg_confidence, 3)
         }
     
-    def get_analysis_history(self, limit: int = 20) -> List[Dict]:
+    def get_analysis_history(self, limit: int = 20, username: str = None) -> List[Dict]:
         """분석 히스토리를 가져옵니다."""
         try:
             data = self._load_data()
             analyses = data.get("analyses", [])
+            
+            # 사용자별 필터링
+            if username:
+                analyses = [analysis for analysis in analyses if analysis.get("username") == username]
+                print(f"📊 사용자 '{username}'의 분석 결과: {len(analyses)}개")
             
             # 최신순으로 정렬하여 반환
             return sorted(analyses, key=lambda x: x["timestamp"], reverse=True)[:limit]
@@ -134,7 +140,7 @@ class AnalysisStorageService:
             print(f"히스토리 조회 오류: {str(e)}")
             return []
     
-    def get_analysis_by_id(self, analysis_id: str) -> Optional[Dict]:
+    def get_analysis_by_id(self, analysis_id: str, username: str = None) -> Optional[Dict]:
         """특정 ID의 분석 결과를 가져옵니다."""
         try:
             data = self._load_data()
@@ -142,6 +148,10 @@ class AnalysisStorageService:
             
             for analysis in analyses:
                 if analysis["id"] == analysis_id:
+                    # 사용자 검증 (username이 제공된 경우)
+                    if username and analysis.get("username") != username:
+                        print(f"⚠️ 권한 없음: 사용자 '{username}'이 '{analysis_id}' 접근 시도")
+                        return None
                     return analysis
             
             return None
@@ -193,11 +203,23 @@ class AnalysisStorageService:
             print(f"통계 요약 조회 오류: {str(e)}")
             return {}
     
-    def delete_analysis(self, analysis_id: str) -> bool:
+    def delete_analysis(self, analysis_id: str, username: str = None) -> bool:
         """특정 분석 결과를 삭제합니다."""
         try:
             data = self._load_data()
             analyses = data.get("analyses", [])
+            
+            # 사용자 권한 검증
+            if username:
+                analysis_to_delete = None
+                for analysis in analyses:
+                    if analysis["id"] == analysis_id:
+                        analysis_to_delete = analysis
+                        break
+                
+                if analysis_to_delete and analysis_to_delete.get("username") != username:
+                    print(f"⚠️ 권한 없음: 사용자 '{username}'이 '{analysis_id}' 삭제 시도")
+                    return False
             
             # 해당 ID의 분석 결과 찾아서 제거
             original_length = len(analyses)
@@ -207,7 +229,7 @@ class AnalysisStorageService:
                 data["metadata"]["total_analyses"] = len(data["analyses"])
                 data["metadata"]["last_updated"] = datetime.now().isoformat()
                 self._save_data(data)
-                print(f"🗑️ 분석 결과 삭제 완료: {analysis_id}")
+                print(f"🗑️ 분석 결과 삭제 완료: {analysis_id} (사용자: {username})")
                 return True
             else:
                 print(f"❌ 분석 결과를 찾을 수 없음: {analysis_id}")

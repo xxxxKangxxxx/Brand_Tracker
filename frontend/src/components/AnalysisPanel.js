@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Upload, Youtube, Play, Settings, ArrowLeft } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 import './AnalysisPanel.css';
 
 // 백엔드 API URL
 const API_BASE_URL = 'http://localhost:8000';
 
 const AnalysisPanel = ({ onAnalysisComplete, onAnalysisStart, isAnalyzing, onBackToDashboard }) => {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('youtube');
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [file, setFile] = useState(null);
   const [settings, setSettings] = useState({
-    resolution: '360p',
+    resolution: '480p',  
     frameInterval: 0.5
   });
 
@@ -24,7 +26,15 @@ const AnalysisPanel = ({ onAnalysisComplete, onAnalysisStart, isAnalyzing, onBac
     onAnalysisStart();
 
     try {
-      const response = await fetch(`${API_BASE_URL}/analyze/youtube`, {
+      // 사용자 정보를 쿼리 파라미터로 전달
+      const username = user?.username;
+      const url = username
+        ? `${API_BASE_URL}/analyze/youtube?username=${encodeURIComponent(username)}`
+        : `${API_BASE_URL}/analyze/youtube`;
+      
+      console.log(`🎬 YouTube 분석 시작 (사용자: ${username})`);
+      
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -69,10 +79,18 @@ const AnalysisPanel = ({ onAnalysisComplete, onAnalysisStart, isAnalyzing, onBac
     onAnalysisStart();
 
     try {
+      // 사용자 정보를 쿼리 파라미터로 전달
+      const username = user?.username;
+      const url = username
+        ? `${API_BASE_URL}/analyze/upload?username=${encodeURIComponent(username)}`
+        : `${API_BASE_URL}/analyze/upload`;
+      
+      console.log(`📤 영상 업로드 분석 시작 (사용자: ${username})`);
+      
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch(`${API_BASE_URL}/analyze/upload`, {
+      const response = await fetch(url, {
         method: 'POST',
         body: formData
       });
@@ -251,7 +269,7 @@ const AnalysisPanel = ({ onAnalysisComplete, onAnalysisStart, isAnalyzing, onBac
                   <option value="360p">360p (빠름)</option>
                   <option value="480p">480p</option>
                   <option value="720p">720p</option>
-                  <option value="1080p">1080p (느림)</option>
+                  <option value="1080p">1080p</option>
                 </select>
               </div>
 

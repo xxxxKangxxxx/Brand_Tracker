@@ -9,7 +9,7 @@ from collections import defaultdict
 class LogoDetectionService:
     def __init__(self):
         self.model = None
-        self.model_path = "models/logo_detection.pt"
+        self.model_path = "models/best_1280.pt"  # 1280 이미지 사이즈로 학습된 모델
         self.confidence_threshold = 0.5  
         self.brand_classes = {
             0: "coca-cola",

@@ -38,15 +38,21 @@ class YouTubeService:
                 '360p': 360,
                 '480p': 480,
                 '720p': 720,
-                '1080p': 1080
+                '1080p': 1080,
             }
             height = resolution_heights.get(resolution, 720)  # 기본값 720p
             
             # yt-dlp 옵션 설정
             print(f"⚙️ 다운로드 설정: {resolution} 해상도 (최대 높이: {height}px)")
+            
+            # 더 정확한 포맷 선택
+            # bestvideo[height<=N]+bestaudio: 비디오와 오디오를 별도로 최적 선택 후 병합
+            # best[height<=N]: 단일 파일 중 최적 선택 (폴백)
+            format_selector = f'bestvideo[height<={height}]+bestaudio/best[height<={height}]'
+            
             ydl_opts = {
-                # 해상도 제한 적용
-                'format': f'best[height<={height}]',
+                # 해상도 제한 적용 (개선된 포맷 선택)
+                'format': format_selector,
                 'outtmpl': filepath,
                 'noplaylist': True,
                 'nocheckcertificate': True,
@@ -86,6 +92,19 @@ class YouTubeService:
                     if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
                         file_size_mb = os.path.getsize(file_path) / (1024 * 1024)
                         print(f"✅ 다운로드 완료: {file} ({file_size_mb:.2f}MB)")
+                        
+                        # 실제 영상 해상도 확인 (OpenCV 사용)
+                        try:
+                            import cv2
+                            cap = cv2.VideoCapture(file_path)
+                            actual_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+                            actual_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+                            cap.release()
+                            print(f"📺 실제 해상도: {actual_width}x{actual_height}")
+                            print(f"🎯 요청 해상도: {resolution} (최대 높이 {height}px)")
+                        except Exception as e:
+                            print(f"⚠️ 해상도 확인 실패: {str(e)}")
+                        
                         return file_path
             
             raise Exception("다운로드된 파일을 찾을 수 없습니다.")

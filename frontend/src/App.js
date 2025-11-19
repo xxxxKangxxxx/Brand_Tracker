@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
+import ScrollToTop from './components/ScrollToTop';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import CreatorDashboard from './pages/CreatorDashboard';
@@ -11,14 +12,15 @@ import './App.css';
 function App() {
   return (
     <AuthProvider>
+      <ScrollToTop />
       <Routes>
         {/* 공개 라우트 */}
         <Route path="/" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
-        {/* 보호된 라우트 - 크리에이터 */}
+        {/* 보호된 라우트 - 크리에이터 (중첩 라우팅) */}
         <Route
-          path="/creator"
+          path="/creator/*"
           element={
             <PrivateRoute requiredUserType="creator">
               <CreatorDashboard />

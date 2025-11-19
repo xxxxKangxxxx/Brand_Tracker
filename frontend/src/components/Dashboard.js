@@ -8,14 +8,15 @@ import {
   BarChart3,
   PieChart,
   Activity,
-  Play
+  Play,
+  ArrowLeft
 } from 'lucide-react';
 import MetricCard from './MetricCard';
 import BrandChart from './BrandChart';
 import TimelineChart from './TimelineChart';
 import './Dashboard.css';
 
-const Dashboard = ({ analysisResults, analysisHistory, isAnalyzing, onStartAnalysis }) => {
+const Dashboard = ({ analysisResults, analysisHistory, isAnalyzing, onStartAnalysis, onBackToHome }) => {
   // 기본 데이터 (분석 결과가 없을 때)
   const defaultMetrics = {
     totalVideos: 0,
@@ -90,6 +91,16 @@ const Dashboard = ({ analysisResults, analysisHistory, isAnalyzing, onStartAnaly
       initial="hidden"
       animate="visible"
     >
+      {/* 홈으로 돌아가기 버튼 (CreatorDashboard에서만 표시) */}
+      {onBackToHome && (
+        <motion.div variants={itemVariants}>
+          <button className="back-to-home-btn" onClick={onBackToHome}>
+            <ArrowLeft className="back-icon" />
+            홈으로 돌아가기
+          </button>
+        </motion.div>
+      )}
+
       {/* 헤더 */}
       <motion.div className="dashboard-header" variants={itemVariants}>
         <div>
