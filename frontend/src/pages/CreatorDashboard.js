@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate, useLocation, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { motion } from 'framer-motion';
 import { 
@@ -80,30 +80,8 @@ const CreatorDashboard = () => {
     loadProfileData();
   }, [user]);
 
-  useEffect(() => {
-    // 분석 히스토리 로드 (홈 화면에서도 로드)
-    loadAnalysisHistory();
-    
-    // 상세 페이지 이벤트 리스너 등록
-    const handleOpenVideoDetails = () => setDetailView('videos');
-    const handleOpenBrandDetails = () => setDetailView('brands');
-    const handleOpenAnalysisDetails = () => setDetailView('analysis');
-    const handleOpenConfidenceDetails = () => setDetailView('confidence');
-    
-    window.addEventListener('openVideoDetails', handleOpenVideoDetails);
-    window.addEventListener('openBrandDetails', handleOpenBrandDetails);
-    window.addEventListener('openAnalysisDetails', handleOpenAnalysisDetails);
-    window.addEventListener('openConfidenceDetails', handleOpenConfidenceDetails);
-    
-    return () => {
-      window.removeEventListener('openVideoDetails', handleOpenVideoDetails);
-      window.removeEventListener('openBrandDetails', handleOpenBrandDetails);
-      window.removeEventListener('openAnalysisDetails', handleOpenAnalysisDetails);
-      window.removeEventListener('openConfidenceDetails', handleOpenConfidenceDetails);
-    };
-  }, [activeView]);
-
-  const loadAnalysisHistory = async () => {
+  // 분석 히스토리 로드 함수 (useCallback으로 메모이제이션)
+  const loadAnalysisHistory = useCallback(async () => {
     try {
       // 사용자 정보를 쿼리 파라미터로 전달
       const username = user?.username;
@@ -142,7 +120,30 @@ const CreatorDashboard = () => {
       console.error('분석 히스토리 로드 실패:', error);
       setAnalysisHistory([]);
     }
-  };
+  }, [user?.username]);
+
+  useEffect(() => {
+    // 분석 히스토리 로드 (홈 화면에서도 로드)
+    loadAnalysisHistory();
+    
+    // 상세 페이지 이벤트 리스너 등록
+    const handleOpenVideoDetails = () => setDetailView('videos');
+    const handleOpenBrandDetails = () => setDetailView('brands');
+    const handleOpenAnalysisDetails = () => setDetailView('analysis');
+    const handleOpenConfidenceDetails = () => setDetailView('confidence');
+    
+    window.addEventListener('openVideoDetails', handleOpenVideoDetails);
+    window.addEventListener('openBrandDetails', handleOpenBrandDetails);
+    window.addEventListener('openAnalysisDetails', handleOpenAnalysisDetails);
+    window.addEventListener('openConfidenceDetails', handleOpenConfidenceDetails);
+    
+    return () => {
+      window.removeEventListener('openVideoDetails', handleOpenVideoDetails);
+      window.removeEventListener('openBrandDetails', handleOpenBrandDetails);
+      window.removeEventListener('openAnalysisDetails', handleOpenAnalysisDetails);
+      window.removeEventListener('openConfidenceDetails', handleOpenConfidenceDetails);
+    };
+  }, [activeView, loadAnalysisHistory]);
 
   const handleAnalysisComplete = (results) => {
     setAnalysisResults(results);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { motion } from 'framer-motion';
 import { Search, Bell, ChevronDown } from 'lucide-react';
@@ -141,6 +141,31 @@ const CompanyPage = () => {
   const [detailView, setDetailView] = useState(null);
 
   // Dashboard 뷰가 활성화될 때 데이터 로드
+  // Dashboard 함수들
+  const loadAnalysisHistory = useCallback(async () => {
+    try {
+      // 사용자 정보를 쿼리 파라미터로 전달
+      const username = user?.username;
+      const url = username 
+        ? `${API_BASE_URL}/analysis/history?limit=20&username=${encodeURIComponent(username)}`
+        : `${API_BASE_URL}/analysis/history?limit=20`;
+      
+      console.log(`📊 분석 히스토리 로드 중... (사용자: ${username})`);
+      const response = await fetch(url);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log(`✅ ${username}의 분석 결과 ${data.data?.length || 0}개 로드`);
+        setAnalysisHistory(data.data || []);
+        if (data.data && data.data.length > 0) {
+          setAnalysisResults(data.data[0]);
+        }
+      }
+    } catch (error) {
+      console.error('분석 히스토리 로드 실패:', error);
+    }
+  }, [user?.username]);
+
   useEffect(() => {
     if (activeView === 'dashboard') {
       loadAnalysisHistory();
@@ -163,32 +188,7 @@ const CompanyPage = () => {
         window.removeEventListener('openConfidenceDetails', handleOpenConfidenceDetails);
       };
     }
-  }, [activeView]);
-
-  // Dashboard 함수들
-  const loadAnalysisHistory = async () => {
-    try {
-      // 사용자 정보를 쿼리 파라미터로 전달
-      const username = user?.username;
-      const url = username 
-        ? `${API_BASE_URL}/analysis/history?limit=20&username=${encodeURIComponent(username)}`
-        : `${API_BASE_URL}/analysis/history?limit=20`;
-      
-      console.log(`📊 분석 히스토리 로드 중... (사용자: ${username})`);
-      const response = await fetch(url);
-      
-      if (response.ok) {
-        const data = await response.json();
-        console.log(`✅ ${username}의 분석 결과 ${data.data?.length || 0}개 로드`);
-        setAnalysisHistory(data.data || []);
-        if (data.data && data.data.length > 0) {
-          setAnalysisResults(data.data[0]);
-        }
-      }
-    } catch (error) {
-      console.error('분석 히스토리 로드 실패:', error);
-    }
-  };
+  }, [activeView, loadAnalysisHistory]);
 
   const checkModelStatus = async () => {
     try {
