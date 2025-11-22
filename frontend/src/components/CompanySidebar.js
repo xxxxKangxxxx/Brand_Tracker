@@ -8,15 +8,12 @@ import {
   MessageCircle,
   FileText,
   Settings,
-  LogOut,
   Activity
 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
 import './CompanySidebar.css';
 
 const CompanySidebar = ({ activeView, onViewChange }) => {
   const navigate = useNavigate();
-  const { logout } = useAuth();
 
   const menuItems = [
     { id: 'home', label: 'Home', icon: Home, type: 'route', path: '/company/home' },
@@ -26,11 +23,6 @@ const CompanySidebar = ({ activeView, onViewChange }) => {
     { id: 'report', label: 'Report', icon: FileText, type: 'route', path: '/company/report' },
     { id: 'settings', label: 'Settings', icon: Settings, type: 'route', path: '/company/settings' },
   ];
-
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
 
   const handleMenuClick = (item) => {
     if (item.type === 'view') {
@@ -136,13 +128,6 @@ const CompanySidebar = ({ activeView, onViewChange }) => {
         </div>
       </div>
 
-      {/* 로그아웃 버튼 */}
-      <div className="company-sidebar-footer">
-        <button className="logout-btn" onClick={handleLogout}>
-          <LogOut className="logout-icon" />
-          <span>Logout</span>
-        </button>
-      </div>
     </motion.aside>
   );
 };

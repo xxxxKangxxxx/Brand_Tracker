@@ -188,38 +188,6 @@
   color: #adb5bd;
 }
 
-/* 로그아웃 */
-.company-sidebar-footer {
-  padding: 1rem;
-  border-top: 1px solid #f1f3f5;
-}
-
-.logout-btn {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 16px;
-  border: none;
-  background: #f8f9fa;
-  color: #636e72;
-  font-size: 14px;
-  font-weight: 500;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.logout-btn:hover {
-  background: #fee;
-  color: #dc3545;
-}
-
-.logout-icon {
-  width: 18px;
-  height: 18px;
-}
-
 /* 스크롤바 스타일 */
 .company-sidebar::-webkit-scrollbar {
   width: 6px;

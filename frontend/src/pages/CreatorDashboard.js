@@ -456,41 +456,66 @@ const CreatorDashboard = () => {
                 </div>
                 <div className="info-details">
                   <div className="info-item">
-                    <span className="info-label">이름</span>
                     {isEditingProfile ? (
                       <input
                         type="text"
                         className="info-input"
                         value={profileData.name}
                         onChange={(e) => handleProfileChange('name', e.target.value)}
+                        placeholder="이름"
                       />
                     ) : (
-                      <span className="info-value">{profileData.name}</span>
+                      <span className="info-value name">{profileData.name}</span>
                     )}
                   </div>
                   <div className="info-item">
-                    <span className="info-label">
-                      <Mail className="info-icon" />
-                      아이디
-                    </span>
                     {isEditingProfile ? (
                       <input
                         type="email"
                         className="info-input"
                         value={profileData.email}
                         onChange={(e) => handleProfileChange('email', e.target.value)}
+                        placeholder="아이디"
                       />
                     ) : (
-                      <span className="info-value">{profileData.email}</span>
+                      <span className="info-value email">
+                        <Mail className="info-icon-inline" />
+                        {profileData.email}
+                      </span>
                     )}
                   </div>
                   <div className="info-item">
-                    <span className="info-label">멤버십</span>
                     <span className="membership-badge pro">
                       <Award className="badge-icon" />
                       {profileData.membership}
                     </span>
                   </div>
+                </div>
+              </div>
+              
+              {/* 키워드 버블차트 */}
+              <div className="keyword-bubble-section">
+                <h4 className="keyword-title">키워드</h4>
+                <div className="keyword-bubbles-packed">
+                  {/* 중앙 대형 버블들 - 분산 배치 */}
+                  <div className="bubble-item xlarge" style={{ left: '30%', top: '35%', zIndex: 5 }}>영상</div>
+                  <div className="bubble-item xlarge" style={{ left: '58%', top: '55%', zIndex: 5 }}>AI</div>
+                  <div className="bubble-item large" style={{ left: '15%', top: '65%', zIndex: 4 }}>브랜드</div>
+                  <div className="bubble-item large" style={{ left: '50%', top: '20%', zIndex: 4 }}>크리에이터</div>
+                  
+                  {/* 중간 크기 버블들 - 중앙 주변 */}
+                  <div className="bubble-item medium" style={{ left: '72%', top: '25%', zIndex: 3 }}>마케팅</div>
+                  <div className="bubble-item medium" style={{ left: '10%', top: '25%', zIndex: 3 }}>분석</div>
+                  <div className="bubble-item medium" style={{ left: '40%', top: '80%', zIndex: 3 }}>탐지</div>
+                  
+                  {/* 작은 버블들 - 주변부에 분산 */}
+                  <div className="bubble-item small" style={{ left: '3%', top: '45%', zIndex: 2 }}>광고</div>
+                  <div className="bubble-item small" style={{ left: '80%', top: '65%', zIndex: 2 }}>YouTube</div>
+                  <div className="bubble-item small" style={{ left: '65%', top: '100%', zIndex: 2 }}>컨텐츠</div>
+                  
+                  {/* 최소 버블들 - 가장자리 */}
+                  <div className="bubble-item xsmall" style={{ left: '5%', top: '8%', zIndex: 1 }}>노출</div>
+                  <div className="bubble-item xsmall" style={{ left: '88%', top: '45%', zIndex: 1 }}>신뢰도</div>
                 </div>
               </div>
               </div>

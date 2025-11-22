@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { motion } from 'framer-motion';
-import { Search, Bell, ChevronDown } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, Bell, ChevronDown, LogOut, User, Edit, X } from 'lucide-react';
 import CompanySidebar from '../components/CompanySidebar';
 import CreatorCard from '../components/CreatorCard';
 import Dashboard from '../components/Dashboard';
@@ -124,7 +125,8 @@ const creatorsData = [
 ];
 
 const CompanyPage = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   
   // 뷰 상태
   const [activeView, setActiveView] = useState('find-creators');
@@ -139,6 +141,107 @@ const CompanyPage = () => {
   const [analysisHistory, setAnalysisHistory] = useState([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [detailView, setDetailView] = useState(null);
+  
+  // 프로필 드롭다운 상태
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  
+  // 프로필 편집 모달 상태
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [companyProfile, setCompanyProfile] = useState({
+    name: user?.username || 'Company',
+    type: 'advertising agency',
+    avatar: '/profile_com_1.png'
+  });
+
+  // localStorage에서 프로필 데이터 로드
+  useEffect(() => {
+    const loadCompanyProfile = () => {
+      try {
+        const savedProfile = localStorage.getItem('companyProfile');
+        if (savedProfile) {
+          const parsed = JSON.parse(savedProfile);
+          setCompanyProfile(parsed);
+          console.log('✅ 회사 프로필 데이터 로드:', parsed);
+        } else {
+          // localStorage에 없으면 기본값 저장
+          const defaultProfile = {
+            name: user?.username || 'Company',
+            type: 'advertising agency',
+            avatar: '/profile_com_1.png'
+          };
+          localStorage.setItem('companyProfile', JSON.stringify(defaultProfile));
+          setCompanyProfile(defaultProfile);
+        }
+      } catch (error) {
+        console.error('프로필 데이터 로드 실패:', error);
+      }
+    };
+
+    loadCompanyProfile();
+  }, [user]);
+
+  // 외부 클릭 시 드롭다운 닫기
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsProfileDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // 프로필 드롭다운 토글
+  const toggleProfileDropdown = () => {
+    setIsProfileDropdownOpen(!isProfileDropdownOpen);
+  };
+
+  // 로그아웃 핸들러
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+  // 프로필 편집 모달 열기
+  const handleOpenEditModal = () => {
+    setIsEditModalOpen(true);
+    setIsProfileDropdownOpen(false);
+  };
+
+  // 프로필 편집 모달 닫기
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    // 원래 데이터로 복원
+    const savedProfile = localStorage.getItem('companyProfile');
+    if (savedProfile) {
+      setCompanyProfile(JSON.parse(savedProfile));
+    }
+  };
+
+  // 프로필 저장
+  const handleSaveProfile = () => {
+    try {
+      localStorage.setItem('companyProfile', JSON.stringify(companyProfile));
+      console.log('✅ 회사 프로필 저장 완료:', companyProfile);
+      alert('프로필이 성공적으로 저장되었습니다!');
+      setIsEditModalOpen(false);
+    } catch (error) {
+      console.error('프로필 저장 실패:', error);
+      alert('프로필 저장에 실패했습니다. 다시 시도해주세요.');
+    }
+  };
+
+  // 프로필 데이터 변경
+  const handleProfileChange = (field, value) => {
+    setCompanyProfile(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
 
   // Dashboard 뷰가 활성화될 때 데이터 로드
   // Dashboard 함수들
@@ -328,15 +431,39 @@ const CompanyPage = () => {
               <Bell className="bell-icon" />
             </button>
             
-            <div className="user-profile">
-              <div className="profile-avatar">
-                <img src="https://i.pravatar.cc/40?img=20" alt="User" />
-              </div>
-              <div className="profile-info">
-                <span className="profile-name">{user?.username || 'Company'}</span>
-                <span className="profile-type">advertising agency</span>
-              </div>
-              <ChevronDown className="chevron-icon" />
+            <div className="user-profile-wrapper" ref={dropdownRef}>
+              <button 
+                className={`user-profile ${isProfileDropdownOpen ? 'active' : ''}`}
+                onClick={toggleProfileDropdown}
+              >
+                <div className="profile-avatar">
+                  <img src={companyProfile.avatar} alt="Company" />
+                </div>
+                <div className="profile-info">
+                  <span className="profile-name">{companyProfile.name}</span>
+                  <span className="profile-type">{companyProfile.type}</span>
+                </div>
+                <ChevronDown className={`chevron-icon ${isProfileDropdownOpen ? 'rotated' : ''}`} />
+              </button>
+              
+              {isProfileDropdownOpen && (
+                <motion.div 
+                  className="profile-dropdown"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <button className="dropdown-item" onClick={handleOpenEditModal}>
+                    <Edit className="dropdown-icon" />
+                    <span>Edit Profile</span>
+                  </button>
+                  <button className="dropdown-item logout-item" onClick={handleLogout}>
+                    <LogOut className="dropdown-icon" />
+                    <span>Logout</span>
+                  </button>
+                </motion.div>
+              )}
             </div>
           </div>
         </header>
@@ -436,6 +563,91 @@ const CompanyPage = () => {
           </div>
         )}
       </div>
+
+      {/* 프로필 편집 모달 */}
+      <AnimatePresence>
+        {isEditModalOpen && (
+          <motion.div 
+            className="modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={handleCloseEditModal}
+          >
+            <motion.div 
+              className="edit-profile-modal"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="modal-header">
+                <h2>프로필 편집</h2>
+                <button className="modal-close-btn" onClick={handleCloseEditModal}>
+                  <X className="close-icon" />
+                </button>
+              </div>
+              
+              <div className="modal-body">
+                {/* 프로필 이미지 미리보기 - 상단 */}
+                <div className="avatar-preview-section">
+                  <div className="avatar-preview">
+                    <img src={companyProfile.avatar} alt="Preview" />
+                  </div>
+                </div>
+                
+                <div className="modal-form-group">
+                  <label>회사명</label>
+                  <input
+                    type="text"
+                    className="modal-input"
+                    value={companyProfile.name}
+                    onChange={(e) => handleProfileChange('name', e.target.value)}
+                    placeholder="회사명을 입력하세요"
+                  />
+                </div>
+                
+                <div className="modal-form-group">
+                  <label>회사 타입</label>
+                  <select
+                    className="modal-select"
+                    value={companyProfile.type}
+                    onChange={(e) => handleProfileChange('type', e.target.value)}
+                  >
+                    <option value="advertising agency">Advertising Agency</option>
+                    <option value="brand">Brand</option>
+                    <option value="startup">Startup</option>
+                    <option value="enterprise">Enterprise</option>
+                    <option value="media">Media</option>
+                    <option value="e-commerce">E-commerce</option>
+                  </select>
+                </div>
+                
+                <div className="modal-form-group">
+                  <label>프로필 이미지 URL</label>
+                  <input
+                    type="text"
+                    className="modal-input"
+                    value={companyProfile.avatar}
+                    onChange={(e) => handleProfileChange('avatar', e.target.value)}
+                    placeholder="이미지 URL을 입력하세요"
+                  />
+                </div>
+              </div>
+              
+              <div className="modal-footer">
+                <button className="modal-btn cancel-btn" onClick={handleCloseEditModal}>
+                  취소
+                </button>
+                <button className="modal-btn save-btn" onClick={handleSaveProfile}>
+                  저장
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

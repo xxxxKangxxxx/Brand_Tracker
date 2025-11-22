@@ -1,6 +1,33 @@
 import React from 'react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Legend } from 'recharts';
 
+// 커스텀 Tick 컴포넌트 - 특정 카테고리의 라벨 위치 조정
+const CustomTick = ({ payload, x, y, textAnchor }) => {
+  // 카테고리별 수직 오프셋 설정
+  const getYOffset = (category) => {
+    switch(category) {
+      case '뷰티': return -12;  // 위로 이동
+      case '여행': return 10;   // 아래로 이동
+      default: return 0;       // 기본 위치
+    }
+  };
+
+  const yOffset = getYOffset(payload.value);
+
+  return (
+    <text
+      x={x}
+      y={y + yOffset}
+      textAnchor={textAnchor}
+      fill="#4a5568"
+      fontSize={14}
+      fontWeight={600}
+    >
+      {payload.value}
+    </text>
+  );
+};
+
 const HexagonChart = ({ data }) => {
   // 기본 데이터 (데이터가 없을 경우)
   const defaultData = [
@@ -20,7 +47,7 @@ const HexagonChart = ({ data }) => {
         <PolarGrid stroke="#e2e8f0" />
         <PolarAngleAxis 
           dataKey="category" 
-          tick={{ fill: '#4a5568', fontSize: 14, fontWeight: 600 }}
+          tick={<CustomTick />}
         />
         <PolarRadiusAxis 
           angle={90} 
