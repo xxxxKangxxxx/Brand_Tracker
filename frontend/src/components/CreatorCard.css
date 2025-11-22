@@ -154,7 +154,7 @@
 }
 
 .btn-view-more,
-.btn-message {
+.btn-collaboration {
   flex: 1;
   padding: 10px;
   border: none;
@@ -176,15 +176,153 @@
   box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
 }
 
-.btn-message {
-  background: #2d3436;
+.btn-collaboration {
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
 }
 
-.btn-message:hover {
-  background: #1a1d1f;
+.btn-collaboration:hover {
+  background: linear-gradient(135deg, #5568d3, #6a3f91);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(45, 52, 54, 0.3);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+/* 협업 제안 모달 */
+.collaboration-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  border-radius: 16px;
+}
+
+.collaboration-modal {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+  overflow: hidden;
+}
+
+.collaboration-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.collaboration-modal-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0;
+}
+
+.collaboration-modal-close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: #f8f9fa;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.collaboration-modal-close:hover {
+  background: #e9ecef;
+}
+
+.close-icon {
+  width: 18px;
+  height: 18px;
+  color: #636e72;
+}
+
+.collaboration-modal-body {
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+.collaboration-modal-body p {
+  font-size: 15px;
+  color: #2d3436;
+  margin: 0.5rem 0;
+  line-height: 1.6;
+}
+
+.collaboration-modal-body strong {
+  color: #667eea;
+  font-weight: 700;
+}
+
+.collaboration-modal-footer {
+  display: flex;
+  gap: 12px;
+  padding: 1rem 1.5rem 1.5rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.collaboration-modal-footer .collaboration-modal-btn {
+  padding: 12px 24px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 120px !important;
+  min-width: 120px !important;
+  max-width: 120px !important;
+  white-space: nowrap;
+  box-sizing: border-box;
+  background: #e5e7eb;
+  color: #9ca3af;
+  flex: 0 0 120px;
+}
+
+.collaboration-modal-footer .collaboration-modal-btn.cancel-btn,
+.collaboration-modal-footer .collaboration-modal-btn.confirm-btn {
+  width: 90px !important;
+  min-width: 90px !important;
+  max-width: 90px !important;
+  flex: 0 0 90px !important;
+  box-sizing: border-box !important;
+  display: block !important;
+  height: auto !important;
+  padding: 8px 16px !important;
+  border: 1px solid #d1d5db !important;
+  background: #e5e7eb !important;
+  color: #9ca3af !important;
+  font-size: 13px !important;
+}
+
+.collaboration-modal-footer .collaboration-modal-btn.cancel-btn:hover {
+  background: #6b7280 !important;
+  color: white !important;
+  border-color: transparent !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+}
+
+.collaboration-modal-footer .collaboration-modal-btn.confirm-btn:hover {
+  background: linear-gradient(135deg, #667eea, #764ba2) !important;
+  color: white !important;
+  border-color: transparent !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
 /* 반응형 */
@@ -200,6 +338,10 @@
 
   .creator-name {
     font-size: 16px;
+  }
+  
+  .collaboration-modal {
+    max-width: 90%;
   }
 }
 

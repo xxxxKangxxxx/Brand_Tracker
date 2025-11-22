@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { WebSocketProvider } from './contexts/WebSocketContext';
 import PrivateRoute from './components/PrivateRoute';
 import ScrollToTop from './components/ScrollToTop';
 import LoginPage from './pages/LoginPage';
@@ -12,8 +13,9 @@ import './App.css';
 function App() {
   return (
     <AuthProvider>
-      <ScrollToTop />
-      <Routes>
+      <WebSocketProvider>
+        <ScrollToTop />
+        <Routes>
         {/* 공개 라우트 */}
         <Route path="/" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -40,7 +42,8 @@ function App() {
 
         {/* 404 - 존재하지 않는 경로는 로그인 페이지로 리다이렉트 */}
         <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+        </Routes>
+      </WebSocketProvider>
     </AuthProvider>
   );
 }

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Heart } from 'lucide-react';
+import { Heart, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import './CreatorCard.css';
 
 const CreatorCard = ({ creator }) => {
   const [isLiked, setIsLiked] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleLike = () => {
     setIsLiked(!isLiked);
@@ -13,8 +15,49 @@ const CreatorCard = ({ creator }) => {
     alert(`${creator.name}의 상세 정보 페이지로 이동합니다.`);
   };
 
-  const handleMessage = () => {
-    alert(`${creator.name}에게 메시지를 보냅니다.`);
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleConfirm = async () => {
+    try {
+      // 회사 프로필 정보 가져오기
+      const companyProfile = JSON.parse(localStorage.getItem('companyProfile') || '{}');
+      const companyName = companyProfile.name || 'Company';
+      
+      // 협업 제안 알림 전송
+      const response = await fetch('http://localhost:8000/notifications/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to_user: creator.username,
+          from_user: companyName,
+          from_type: 'company',
+          type: 'collaboration_request',
+          message: '협업 제안이 도착했습니다.',
+          data: {
+            company_name: companyName,
+            creator_name: creator.name
+          }
+        })
+      });
+      
+      if (response.ok) {
+        alert('협업 제안이 성공적으로 전송되었습니다!');
+        setIsModalOpen(false);
+      } else {
+        throw new Error('전송 실패');
+      }
+    } catch (error) {
+      console.error('협업 제안 전송 실패:', error);
+      alert('협업 제안 전송에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   return (
@@ -61,10 +104,53 @@ const CreatorCard = ({ creator }) => {
         <button className="btn-view-more" onClick={handleViewMore}>
           View more
         </button>
-        <button className="btn-message" onClick={handleMessage}>
-          Message
+        <button className="btn-collaboration" onClick={handleOpenModal}>
+          협업 제안
         </button>
       </div>
+
+      {/* 협업 제안 확인 모달 */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <motion.div 
+            className="collaboration-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={handleCloseModal}
+          >
+            <motion.div 
+              className="collaboration-modal"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="collaboration-modal-header">
+                <h3>협업 제안</h3>
+                <button className="collaboration-modal-close" onClick={handleCloseModal}>
+                  <X className="close-icon" />
+                </button>
+              </div>
+              
+              <div className="collaboration-modal-body">
+                <p><strong>{creator.name}</strong>님에게</p>
+                <p>협업 제안을 보내시겠습니까?</p>
+              </div>
+              
+              <div className="collaboration-modal-footer">
+                <button className="collaboration-modal-btn cancel-btn" onClick={handleCloseModal}>
+                  취소
+                </button>
+                <button className="collaboration-modal-btn confirm-btn" onClick={handleConfirm}>
+                  확인
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

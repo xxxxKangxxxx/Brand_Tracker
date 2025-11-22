@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { motion } from 'framer-motion';
+import { useWebSocket } from '../contexts/WebSocketContext';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, 
   Activity,
@@ -16,7 +17,8 @@ import {
   Play,
   Edit,
   Save,
-  X
+  X,
+  Bell
 } from 'lucide-react';
 import HexagonChart from '../components/HexagonChart';
 import AnalysisPanel from '../components/AnalysisPanel';
@@ -31,8 +33,12 @@ const API_BASE_URL = 'http://localhost:8000';
 
 const CreatorDashboard = () => {
   const { user, logout } = useAuth();
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useWebSocket();
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // 알림 모달 상태
+  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   
   // 데이터 상태 관리
   const [analysisResults, setAnalysisResults] = useState(null);
@@ -335,6 +341,13 @@ const CreatorDashboard = () => {
           >
             <BarChart3 className="nav-icon" />
             분석 결과
+          </button>
+          <button 
+            className="notification-btn" 
+            onClick={() => setIsNotificationModalOpen(true)}
+          >
+            <Bell className="bell-icon" />
+            {unreadCount > 0 && <span className="notification-badge">{unreadCount}</span>}
           </button>
           <button className="nav-button logout" onClick={handleLogout}>
             <LogOut className="nav-icon" />
@@ -787,8 +800,91 @@ const CreatorDashboard = () => {
           </motion.div>
         )}
       </div>
+
+      {/* 알림 모달 */}
+      <AnimatePresence>
+        {isNotificationModalOpen && (
+          <motion.div 
+            className="notification-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsNotificationModalOpen(false)}
+          >
+            <motion.div 
+              className="notification-modal"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="notification-modal-header">
+                <h2>알림</h2>
+                <div className="notification-header-actions">
+                  {unreadCount > 0 && (
+                    <button className="mark-all-read-btn" onClick={markAllAsRead}>
+                      모두 읽음
+                    </button>
+                  )}
+                  <button className="notification-modal-close" onClick={() => setIsNotificationModalOpen(false)}>
+                    <X className="close-icon" />
+                  </button>
+                </div>
+              </div>
+              
+              <div className="notification-modal-body">
+                {notifications.length > 0 ? (
+                  <div className="notification-list">
+                    {notifications.slice(0, 10).map((notification) => (
+                      <div 
+                        key={notification.id}
+                        className={`notification-item ${!notification.read ? 'unread' : ''}`}
+                        onClick={() => markAsRead(notification.id)}
+                      >
+                        {!notification.read && <div className="unread-indicator" />}
+                        <div className="notification-content">
+                          <div className="notification-header-item">
+                            <span className="notification-from">{notification.from_user}</span>
+                            <span className="notification-time">
+                              {getTimeAgo(notification.timestamp)}
+                            </span>
+                          </div>
+                          <div className="notification-message">
+                            {notification.message}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="notification-empty">
+                    <Bell className="empty-icon" />
+                    <p>알림이 없습니다</p>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
+};
+
+// 시간 표시 헬퍼 함수
+const getTimeAgo = (timestamp) => {
+  const now = new Date();
+  const time = new Date(timestamp);
+  const diffMs = now - time;
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+  
+  if (diffMins < 1) return '방금 전';
+  if (diffMins < 60) return `${diffMins}분 전`;
+  if (diffHours < 24) return `${diffHours}시간 전`;
+  return `${diffDays}일 전`;
 };
 
 export default CreatorDashboard;

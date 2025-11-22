@@ -8,7 +8,7 @@ import './LoginPage.css';
 const API_BASE_URL = 'http://localhost:8000';
 
 const LoginPage = () => {
-  const [username, setUsername] = useState('');
+  const [id, setId] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -27,7 +27,7 @@ const LoginPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ id, password }),
       });
 
       const data = await response.json();
@@ -79,13 +79,13 @@ const LoginPage = () => {
           )}
 
           <div className="form-group">
-            <label htmlFor="username">아이디</label>
+            <label htmlFor="id">아이디(이메일)</label>
             <input
-              type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="아이디를 입력하세요"
+              type="email"
+              id="id"
+              value={id}
+              onChange={(e) => setId(e.target.value)}
+              placeholder="이메일을 입력하세요 (예: user@example.com)"
               required
               disabled={loading}
             />

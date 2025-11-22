@@ -7,6 +7,7 @@ import './RegisterPage.css';
 const API_BASE_URL = 'http://localhost:8000';
 
 const RegisterPage = () => {
+  const [id, setId] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -16,9 +17,27 @@ const RegisterPage = () => {
   
   const navigate = useNavigate();
 
+  // 이메일 형식 검증 함수
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    // 이메일 형식 확인
+    if (!validateEmail(id)) {
+      setError('올바른 이메일 형식을 입력해주세요.');
+      return;
+    }
+
+    // 사용자명 확인
+    if (!username || username.trim().length === 0) {
+      setError('사용자명을 입력해주세요.');
+      return;
+    }
 
     // 비밀번호 확인
     if (password !== confirmPassword) {
@@ -41,6 +60,7 @@ const RegisterPage = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          id,
           username,
           password,
           user_type: userType,
@@ -90,13 +110,26 @@ const RegisterPage = () => {
           )}
 
           <div className="form-group">
-            <label htmlFor="username">아이디</label>
+            <label htmlFor="id">이메일(ID)</label>
+            <input
+              type="email"
+              id="id"
+              value={id}
+              onChange={(e) => setId(e.target.value)}
+              placeholder="이메일을 입력하세요 (예: user@example.com)"
+              required
+              disabled={loading}
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="username">사용자명</label>
             <input
               type="text"
               id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="아이디를 입력하세요"
+              placeholder="사용자명을 입력하세요"
               required
               disabled={loading}
             />

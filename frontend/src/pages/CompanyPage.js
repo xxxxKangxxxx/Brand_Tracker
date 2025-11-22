@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Bell, ChevronDown, LogOut, User, Edit, X } from 'lucide-react';
+import { Search, Bell, ChevronDown, LogOut, Edit, X } from 'lucide-react';
 import CompanySidebar from '../components/CompanySidebar';
 import CreatorCard from '../components/CreatorCard';
 import Dashboard from '../components/Dashboard';
@@ -17,11 +17,25 @@ import './CompanyPage.css';
 const API_BASE_URL = 'http://localhost:8000';
 
 // 하드코딩 크리에이터 데이터
+// name: 사용자명 (표시용), username: id(이메일) (알림 전송용)
 const creatorsData = [
   {
     id: 1,
+    name: '산비스',
+    username: 'sanbis@example.com',  // id(이메일) - 실제 회원가입한 이메일과 일치해야 함
+    avatar: '/profile_com_1.png',
+    categories: ['스타트업', '일상 브이로그'],
+    stats: {
+      youtube: '500만',
+      instagram: '300만',
+      avgViews: '평균 250k'
+    },
+    tags: ['스타트업', '데일리', '라이프스타일']
+  },
+  {
+    id: 2,
     name: '규진',
-    username: 'gyuuujin',
+    username: 'gyuuujin@example.com',
     avatar: '/profile_1.jpg',
     categories: ['뷰티', '일상 브이로그'],
     stats: {
@@ -32,9 +46,9 @@ const creatorsData = [
     tags: ['뷰티', '데일리', '패션', '아웃']
   },
   {
-    id: 2,
+    id: 3,
     name: 'LeoJ Makeup',
-    username: 'LeoJMakeup',
+    username: 'leojmakeup@example.com',
     avatar: '/profile_2.jpg',
     categories: ['뷰티'],
     stats: {
@@ -45,9 +59,9 @@ const creatorsData = [
     tags: ['뷰티', '여행', '화장품', '메이크업']
   },
   {
-    id: 3,
+    id: 4,
     name: '권또또',
-    username: 'TTOTTOKWON',
+    username: 'ttottokwon@example.com',
     avatar: '/profile_3.jpg',
     categories: ['토크', '일상 브이로그'],
     stats: {
@@ -58,9 +72,9 @@ const creatorsData = [
     tags: ['멘스', '데일리', '토크', '먹방']
   },
   {
-    id: 4,
+    id: 5,
     name: '가비걸',
-    username: 'GABEEGIRL',
+    username: 'gabeegirl@example.com',
     avatar: '/profile_4.jpg',
     categories: ['뷰티', '일상 브이로그'],
     stats: {
@@ -71,9 +85,9 @@ const creatorsData = [
     tags: ['뷰티', '데일리', '패션', '아웃']
   },
   {
-    id: 5,
+    id: 6,
     name: '공부왕찐천재홍진경',
-    username: 'zzin_oneleft',
+    username: 'zzin_oneleft@example.com',
     avatar: '/profile_5.jpg',
     categories: ['일상 브이로그', '토크'],
     stats: {
@@ -84,9 +98,9 @@ const creatorsData = [
     tags: ['토크', '데일리', '개그', '아웃']
   },
   {
-    id: 6,
+    id: 7,
     name: '할명수',
-    username: 'halmyungsoo',
+    username: 'halmyungsoo@example.com',
     avatar: '/profile_6.jpg',
     categories: ['토크'],
     stats: {
@@ -97,9 +111,9 @@ const creatorsData = [
     tags: ['토크', '먹방']
   },
   {
-    id: 7,
+    id: 8,
     name: '찰스엔터',
-    username: 'CharlesEnter',
+    username: 'charlesenter@example.com',
     avatar: '/profile_7.jpg',
     categories: ['토크', '일상 브이로그'],
     stats: {
@@ -110,9 +124,9 @@ const creatorsData = [
     tags: ['일상', '리액션', '토크', '먹방']
   },
   {
-    id: 8,
+    id: 9,
     name: '느낌적인느낌',
-    username: 'feellikefeel',
+    username: 'feellikefeel@example.com',
     avatar: '/profile_8.jpg',
     categories: ['댄스', '일상 브이로그'],
     stats: {
@@ -127,6 +141,9 @@ const creatorsData = [
 const CompanyPage = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  
+  // Company는 알림을 받지 않으므로 빈 배열로 처리
+  // (협업 제안을 보내는 쪽이므로 알림을 받을 필요 없음)
   
   // 뷰 상태
   const [activeView, setActiveView] = useState('find-creators');
@@ -153,6 +170,9 @@ const CompanyPage = () => {
     type: 'advertising agency',
     avatar: '/profile_com_1.png'
   });
+  
+  // 알림 모달 상태
+  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
 
   // localStorage에서 프로필 데이터 로드
   useEffect(() => {
@@ -427,8 +447,12 @@ const CompanyPage = () => {
               </div>
             )}
             
-            <button className="notification-btn">
+            <button 
+              className="notification-btn" 
+              onClick={() => setIsNotificationModalOpen(true)}
+            >
               <Bell className="bell-icon" />
+              {/* Company는 알림을 받지 않으므로 배지 표시 안 함 */}
             </button>
             
             <div className="user-profile-wrapper" ref={dropdownRef}>
@@ -648,8 +672,48 @@ const CompanyPage = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* 알림 모달 */}
+      <AnimatePresence>
+        {isNotificationModalOpen && (
+          <motion.div 
+            className="notification-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsNotificationModalOpen(false)}
+          >
+            <motion.div 
+              className="notification-modal"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="notification-modal-header">
+                <h2>알림</h2>
+                <div className="notification-header-actions">
+                  <button className="notification-modal-close" onClick={() => setIsNotificationModalOpen(false)}>
+                    <X className="close-icon" />
+                  </button>
+                </div>
+              </div>
+              
+              <div className="notification-modal-body">
+                {/* Company는 알림을 받지 않음 (협업 제안을 보내는 쪽) */}
+                <div className="notification-empty">
+                  <Bell className="empty-icon" />
+                  <p>알림이 없습니다</p>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
+
 
 export default CompanyPage;

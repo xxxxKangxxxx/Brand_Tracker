@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi import FastAPI, HTTPException, UploadFile, File, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
@@ -14,6 +14,7 @@ from .services.youtube_service import YouTubeService
 from .services.logo_detection_service import LogoDetectionService
 from .services.video_processing_service import VideoProcessingService
 from .services.analysis_storage_service import AnalysisStorageService
+from .services.notification_service import NotificationService
 
 app = FastAPI(title="브랜드 추적 시스템 API", version="1.0.0")
 
@@ -26,11 +27,42 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# WebSocket 연결 관리
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: Dict[str, WebSocket] = {}
+    
+    async def connect(self, user_id: str, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections[user_id] = websocket
+        print(f"🔌 WebSocket 연결: {user_id}")
+    
+    def disconnect(self, user_id: str):
+        if user_id in self.active_connections:
+            del self.active_connections[user_id]
+            print(f"❌ WebSocket 연결 해제: {user_id}")
+    
+    async def send_notification(self, user_id: str, message: dict):
+        if user_id in self.active_connections:
+            try:
+                await self.active_connections[user_id].send_json(message)
+                print(f"📤 알림 전송: {user_id} -> {message.get('message', '')}")
+                return True
+            except Exception as e:
+                print(f"⚠️ 알림 전송 실패: {user_id} - {str(e)}")
+                return False
+        else:
+            print(f"⚠️ WebSocket 미연결: {user_id}")
+            return False
+
+manager = ConnectionManager()
+
 # 서비스 인스턴스 생성
 youtube_service = YouTubeService()
 logo_detection_service = LogoDetectionService()
 video_processing_service = VideoProcessingService()
 storage_service = AnalysisStorageService()
+notification_service = NotificationService()
 
 # 사용자 데이터 파일 경로
 USERS_FILE = "users.json"
@@ -69,12 +101,13 @@ class AnalysisResponse(BaseModel):
     analysis_settings: Dict
 
 class RegisterRequest(BaseModel):
-    username: str
+    id: str  # 이메일 형식
+    username: str  # 사용자명
     password: str
     user_type: str  # "creator" or "company"
 
 class LoginRequest(BaseModel):
-    username: str
+    id: str  # 이메일 형식
     password: str
 
 class AuthResponse(BaseModel):
@@ -82,6 +115,14 @@ class AuthResponse(BaseModel):
     message: str
     token: Optional[str] = None
     user: Optional[Dict] = None
+
+class NotificationSendRequest(BaseModel):
+    to_user: str
+    from_user: str
+    from_type: str = "company"
+    type: str = "collaboration_request"
+    message: str
+    data: Optional[Dict] = None
 
 @app.get("/")
 async def root():
@@ -95,18 +136,25 @@ async def register(request: RegisterRequest):
         if request.user_type not in ["creator", "company"]:
             raise HTTPException(status_code=400, detail="사용자 타입은 'creator' 또는 'company'여야 합니다.")
         
+        # 이메일 형식 검증
+        import re
+        email_pattern = r'^[^\s@]+@[^\s@]+\.[^\s@]+$'
+        if not re.match(email_pattern, request.id):
+            raise HTTPException(status_code=400, detail="올바른 이메일 형식을 입력해주세요.")
+        
         # 사용자 데이터 로드
         users = load_users()
         
-        # 중복 확인
-        if request.username in users:
-            raise HTTPException(status_code=400, detail="이미 존재하는 사용자명입니다.")
+        # 중복 확인 (id 기준)
+        if request.id in users:
+            raise HTTPException(status_code=400, detail="이미 존재하는 이메일입니다.")
         
         # 비밀번호 해시화
         hashed_password = hash_password(request.password)
         
-        # 새 사용자 저장
-        users[request.username] = {
+        # 새 사용자 저장 (id를 키로 사용)
+        users[request.id] = {
+            "id": request.id,
             "username": request.username,
             "password": hashed_password,
             "user_type": request.user_type,
@@ -115,7 +163,7 @@ async def register(request: RegisterRequest):
         
         save_users(users)
         
-        print(f"✅ 새 사용자 등록: {request.username} ({request.user_type})")
+        print(f"✅ 새 사용자 등록: {request.id} ({request.username}, {request.user_type})")
         
         return AuthResponse(
             status="success",
@@ -135,11 +183,11 @@ async def login(request: LoginRequest):
         # 사용자 데이터 로드
         users = load_users()
         
-        # 사용자 확인
-        if request.username not in users:
+        # 사용자 확인 (id 기준)
+        if request.id not in users:
             raise HTTPException(status_code=401, detail="아이디 또는 비밀번호가 올바르지 않습니다.")
         
-        user = users[request.username]
+        user = users[request.id]
         
         # 비밀번호 확인
         hashed_password = hash_password(request.password)
@@ -149,13 +197,14 @@ async def login(request: LoginRequest):
         # 토큰 생성
         token = generate_token()
         
-        print(f"✅ 로그인 성공: {request.username} ({user['user_type']})")
+        print(f"✅ 로그인 성공: {request.id} ({user['username']}, {user['user_type']})")
         
         return AuthResponse(
             status="success",
             message="로그인 성공",
             token=token,
             user={
+                "id": user["id"],
                 "username": user["username"],
                 "user_type": user["user_type"]
             }
@@ -443,6 +492,117 @@ async def test_youtube_analysis():
     except Exception as e:
         print(f"❌ 테스트 분석 오류: {str(e)}")
         raise HTTPException(status_code=500, detail=f"테스트 분석 오류: {str(e)}")
+
+@app.websocket("/ws/{user_id}")
+async def websocket_endpoint(websocket: WebSocket, user_id: str):
+    """WebSocket 연결 엔드포인트 - 실시간 알림 수신용 (id 기준)"""
+    await manager.connect(user_id, websocket)
+    try:
+        while True:
+            # 클라이언트로부터 메시지 수신 (연결 유지용)
+            data = await websocket.receive_text()
+            # 필요시 메시지 처리 로직 추가
+    except WebSocketDisconnect:
+        manager.disconnect(user_id)
+        print(f"🔌 WebSocket 연결 종료: {user_id}")
+
+# 알림 API 엔드포인트
+@app.post("/notifications/send")
+async def send_notification(request: NotificationSendRequest):
+    """알림 생성 및 전송"""
+    try:
+        # 알림 생성 및 저장
+        notification = notification_service.create_notification(
+            to_user=request.to_user,
+            from_user=request.from_user,
+            from_type=request.from_type,
+            notification_type=request.type,
+            message=request.message,
+            data=request.data
+        )
+        
+        # WebSocket을 통해 실시간 전송
+        await manager.send_notification(request.to_user, notification)
+        
+        return {
+            "status": "success",
+            "message": "알림이 전송되었습니다.",
+            "notification": notification
+        }
+    except Exception as e:
+        print(f"❌ 알림 전송 오류: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"알림 전송 실패: {str(e)}")
+
+@app.get("/notifications")
+async def get_notifications(username: str, limit: int = 20, unread_only: bool = False):
+    """사용자의 알림 목록 조회"""
+    try:
+        notifications = notification_service.get_user_notifications(
+            username=username,
+            limit=limit,
+            unread_only=unread_only
+        )
+        unread_count = notification_service.get_unread_count(username)
+        
+        return {
+            "status": "success",
+            "data": notifications,
+            "unread_count": unread_count,
+            "total": len(notifications)
+        }
+    except Exception as e:
+        print(f"❌ 알림 조회 오류: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"알림 조회 실패: {str(e)}")
+
+@app.put("/notifications/{notification_id}/read")
+async def mark_notification_as_read(notification_id: str, username: str):
+    """알림을 읽음으로 표시"""
+    try:
+        success = notification_service.mark_as_read(username, notification_id)
+        if success:
+            return {
+                "status": "success",
+                "message": "알림이 읽음 처리되었습니다."
+            }
+        else:
+            raise HTTPException(status_code=404, detail="알림을 찾을 수 없습니다.")
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ 알림 읽음 처리 오류: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"알림 읽음 처리 실패: {str(e)}")
+
+@app.put("/notifications/read-all")
+async def mark_all_notifications_as_read(username: str):
+    """모든 알림을 읽음으로 표시"""
+    try:
+        count = notification_service.mark_all_as_read(username)
+        return {
+            "status": "success",
+            "message": f"{count}개의 알림이 읽음 처리되었습니다.",
+            "count": count
+        }
+    except Exception as e:
+        print(f"❌ 모든 알림 읽음 처리 오류: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"모든 알림 읽음 처리 실패: {str(e)}")
+
+@app.delete("/notifications/{notification_id}")
+async def delete_notification(notification_id: str, username: str):
+    """알림 삭제"""
+    try:
+        success = notification_service.delete_notification(username, notification_id)
+        if success:
+            return {
+                "status": "success",
+                "message": "알림이 삭제되었습니다."
+            }
+        else:
+            raise HTTPException(status_code=404, detail="알림을 찾을 수 없습니다.")
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ 알림 삭제 오류: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"알림 삭제 실패: {str(e)}")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000) 
