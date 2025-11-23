@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, Youtube, Play, Settings, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import './AnalysisPanel.css';
@@ -12,6 +12,7 @@ const AnalysisPanel = ({ onAnalysisComplete, onAnalysisStart, isAnalyzing, onBac
   const [activeTab, setActiveTab] = useState('youtube');
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [file, setFile] = useState(null);
+  const [isLoadingModalOpen, setIsLoadingModalOpen] = useState(false);
   const [settings, setSettings] = useState({
     resolution: '480p',  
     frameInterval: 0.5
@@ -24,6 +25,7 @@ const AnalysisPanel = ({ onAnalysisComplete, onAnalysisStart, isAnalyzing, onBac
     }
 
     onAnalysisStart();
+    setIsLoadingModalOpen(true);
 
     try {
       // 사용자 정보를 쿼리 파라미터로 전달 (id 사용)
@@ -48,6 +50,7 @@ const AnalysisPanel = ({ onAnalysisComplete, onAnalysisStart, isAnalyzing, onBac
 
       if (response.ok) {
         const result = await response.json();
+        setIsLoadingModalOpen(false);
         onAnalysisComplete(result);
         setYoutubeUrl('');
       } else {
@@ -63,6 +66,7 @@ const AnalysisPanel = ({ onAnalysisComplete, onAnalysisStart, isAnalyzing, onBac
     } catch (error) {
       console.error('Analysis error:', error);
       const message = error.message || error.toString();
+      setIsLoadingModalOpen(false);
       alert('분석 중 오류가 발생했습니다: ' + message);
       onAnalysisComplete(null);
     }
@@ -77,6 +81,7 @@ const AnalysisPanel = ({ onAnalysisComplete, onAnalysisStart, isAnalyzing, onBac
     }
 
     onAnalysisStart();
+    setIsLoadingModalOpen(true);
 
     try {
       // 사용자 정보를 쿼리 파라미터로 전달 (id 사용)
@@ -97,6 +102,7 @@ const AnalysisPanel = ({ onAnalysisComplete, onAnalysisStart, isAnalyzing, onBac
 
       if (response.ok) {
         const result = await response.json();
+        setIsLoadingModalOpen(false);
         onAnalysisComplete(result);
         setFile(null);
       } else {
@@ -104,6 +110,7 @@ const AnalysisPanel = ({ onAnalysisComplete, onAnalysisStart, isAnalyzing, onBac
       }
     } catch (error) {
       console.error('Analysis error:', error);
+      setIsLoadingModalOpen(false);
       alert('분석 중 오류가 발생했습니다: ' + error.message);
       onAnalysisComplete(null);
     }
@@ -191,17 +198,8 @@ const AnalysisPanel = ({ onAnalysisComplete, onAnalysisStart, isAnalyzing, onBac
               onClick={handleYoutubeAnalysis}
               disabled={isAnalyzing || !youtubeUrl.trim()}
             >
-              {isAnalyzing ? (
-                <>
-                  <div className="loading-spinner"></div>
-                  분석 중...
-                </>
-              ) : (
-                <>
-                  <Play className="button-icon" />
-                  분석 시작
-                </>
-              )}
+              <Play className="button-icon" />
+              분석 시작
             </button>
           </motion.div>
         )}
@@ -237,17 +235,8 @@ const AnalysisPanel = ({ onAnalysisComplete, onAnalysisStart, isAnalyzing, onBac
               onClick={handleFileAnalysis}
               disabled={isAnalyzing || !file}
             >
-              {isAnalyzing ? (
-                <>
-                  <div className="loading-spinner"></div>
-                  분석 중...
-                </>
-              ) : (
-                <>
-                  <Play className="button-icon" />
-                  분석 시작
-                </>
-              )}
+              <Play className="button-icon" />
+              분석 시작
             </button>
           </motion.div>
         )}
@@ -297,6 +286,31 @@ const AnalysisPanel = ({ onAnalysisComplete, onAnalysisStart, isAnalyzing, onBac
           </motion.div>
         )}
       </div>
+
+      {/* 로딩 모달 */}
+      <AnimatePresence>
+        {isLoadingModalOpen && (
+          <motion.div 
+            className="analysis-loading-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div 
+              className="analysis-loading-modal"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="analysis-loading-content">
+                <div className="loading-spinner"></div>
+                <p>분석 중...</p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };
