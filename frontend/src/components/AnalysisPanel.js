@@ -26,13 +26,13 @@ const AnalysisPanel = ({ onAnalysisComplete, onAnalysisStart, isAnalyzing, onBac
     onAnalysisStart();
 
     try {
-      // 사용자 정보를 쿼리 파라미터로 전달
-      const username = user?.username;
-      const url = username
-        ? `${API_BASE_URL}/analyze/youtube?username=${encodeURIComponent(username)}`
+      // 사용자 정보를 쿼리 파라미터로 전달 (id 사용)
+      const userId = user?.id;
+      const url = userId
+        ? `${API_BASE_URL}/analyze/youtube?username=${encodeURIComponent(userId)}`
         : `${API_BASE_URL}/analyze/youtube`;
       
-      console.log(`🎬 YouTube 분석 시작 (사용자: ${username})`);
+      console.log(`🎬 YouTube 분석 시작 (사용자 id: ${userId}, 이름: ${user?.username})`);
       
       const response = await fetch(url, {
         method: 'POST',
@@ -79,13 +79,13 @@ const AnalysisPanel = ({ onAnalysisComplete, onAnalysisStart, isAnalyzing, onBac
     onAnalysisStart();
 
     try {
-      // 사용자 정보를 쿼리 파라미터로 전달
-      const username = user?.username;
-      const url = username
-        ? `${API_BASE_URL}/analyze/upload?username=${encodeURIComponent(username)}`
+      // 사용자 정보를 쿼리 파라미터로 전달 (id 사용)
+      const userId = user?.id;
+      const url = userId
+        ? `${API_BASE_URL}/analyze/upload?username=${encodeURIComponent(userId)}`
         : `${API_BASE_URL}/analyze/upload`;
       
-      console.log(`📤 영상 업로드 분석 시작 (사용자: ${username})`);
+      console.log(`📤 영상 업로드 분석 시작 (사용자 id: ${userId}, 이름: ${user?.username})`);
       
       const formData = new FormData();
       formData.append('file', file);

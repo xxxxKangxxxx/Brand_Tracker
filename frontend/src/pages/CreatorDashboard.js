@@ -89,13 +89,13 @@ const CreatorDashboard = () => {
   // 분석 히스토리 로드 함수 (useCallback으로 메모이제이션)
   const loadAnalysisHistory = useCallback(async () => {
     try {
-      // 사용자 정보를 쿼리 파라미터로 전달
-      const username = user?.username;
-      const url = username 
-        ? `${API_BASE_URL}/analysis/history?limit=20&username=${encodeURIComponent(username)}`
+      // 사용자 정보를 쿼리 파라미터로 전달 (id 사용)
+      const userId = user?.id;
+      const url = userId 
+        ? `${API_BASE_URL}/analysis/history?limit=20&username=${encodeURIComponent(userId)}`
         : `${API_BASE_URL}/analysis/history?limit=20`;
       
-      console.log(`📊 분석 히스토리 로드 중... (사용자: ${username})`);
+      console.log(`📊 분석 히스토리 로드 중... (사용자 id: ${userId}, 이름: ${user?.username})`);
       const response = await fetch(url);
       
       if (response.ok) {
@@ -114,7 +114,7 @@ const CreatorDashboard = () => {
           console.warn('분석 히스토리가 예상과 다른 구조입니다:', result);
         }
         
-        console.log(`✅ ${username}의 분석 결과 ${historyData.length}개 로드`);
+        console.log(`✅ ${user?.username}의 분석 결과 ${historyData.length}개 로드`);
         setAnalysisHistory(historyData);
         if (historyData.length > 0) {
           setAnalysisResults(historyData[0]);
@@ -126,7 +126,7 @@ const CreatorDashboard = () => {
       console.error('분석 히스토리 로드 실패:', error);
       setAnalysisHistory([]);
     }
-  }, [user?.username]);
+  }, [user?.id, user?.username]);
 
   useEffect(() => {
     // 분석 히스토리 로드 (홈 화면에서도 로드)
@@ -164,10 +164,10 @@ const CreatorDashboard = () => {
 
   const handleDeleteAnalysis = async (analysisId) => {
     try {
-      // 사용자 정보를 쿼리 파라미터로 전달
-      const username = user?.username;
-      const url = username
-        ? `${API_BASE_URL}/analysis/${analysisId}?username=${encodeURIComponent(username)}`
+      // 사용자 정보를 쿼리 파라미터로 전달 (id 사용)
+      const userId = user?.id;
+      const url = userId
+        ? `${API_BASE_URL}/analysis/${analysisId}?username=${encodeURIComponent(userId)}`
         : `${API_BASE_URL}/analysis/${analysisId}`;
       
       const response = await fetch(url, {

@@ -16,26 +16,22 @@ import './CompanyPage.css';
 // 백엔드 API URL
 const API_BASE_URL = 'http://localhost:8000';
 
-// 하드코딩 크리에이터 데이터
-// name: 사용자명 (표시용), username: id(이메일) (알림 전송용)
-const creatorsData = [
-  {
-    id: 1,
-    name: '산비스',
-    username: 'sanbis@example.com',  // id(이메일) - 실제 회원가입한 이메일과 일치해야 함
+// 크리에이터 추가 정보 (users.json에 없는 정보)
+// 회원가입된 크리에이터는 users.json에서 username을 가져오므로, 여기서는 추가 정보(avatar, categories, stats, tags)만 정의
+const creatorAdditionalInfo = {
+  'sanbis@example.com': {
+    // username은 users.json에서 가져오므로 생략
     avatar: '/profile_com_1.png',
-    categories: ['스타트업', '일상 브이로그'],
+    categories: ['창업', '일상 브이로그'],
     stats: {
       youtube: '500만',
       instagram: '300만',
       avgViews: '평균 250k'
     },
-    tags: ['스타트업', '데일리', '라이프스타일']
+    tags: ['창업', '데일리', '라이프스타일']
   },
-  {
-    id: 2,
-    name: '규진',
-    username: 'gyuuujin@example.com',
+  'gyuuujin@example.com': {
+    username: '규진',
     avatar: '/profile_1.jpg',
     categories: ['뷰티', '일상 브이로그'],
     stats: {
@@ -45,10 +41,8 @@ const creatorsData = [
     },
     tags: ['뷰티', '데일리', '패션', '아웃']
   },
-  {
-    id: 3,
-    name: 'LeoJ Makeup',
-    username: 'leojmakeup@example.com',
+  'leojmakeup@example.com': {
+    username: 'LeoJ Makeup',
     avatar: '/profile_2.jpg',
     categories: ['뷰티'],
     stats: {
@@ -58,10 +52,8 @@ const creatorsData = [
     },
     tags: ['뷰티', '여행', '화장품', '메이크업']
   },
-  {
-    id: 4,
-    name: '권또또',
-    username: 'ttottokwon@example.com',
+  'ttottokwon@example.com': {
+    username: '권또또',
     avatar: '/profile_3.jpg',
     categories: ['토크', '일상 브이로그'],
     stats: {
@@ -71,10 +63,8 @@ const creatorsData = [
     },
     tags: ['멘스', '데일리', '토크', '먹방']
   },
-  {
-    id: 5,
-    name: '가비걸',
-    username: 'gabeegirl@example.com',
+  'gabeegirl@example.com': {
+    username: '가비걸',
     avatar: '/profile_4.jpg',
     categories: ['뷰티', '일상 브이로그'],
     stats: {
@@ -84,10 +74,8 @@ const creatorsData = [
     },
     tags: ['뷰티', '데일리', '패션', '아웃']
   },
-  {
-    id: 6,
-    name: '공부왕찐천재홍진경',
-    username: 'zzin_oneleft@example.com',
+  'zzin_oneleft@example.com': {
+    username: '공부왕찐천재홍진경',
     avatar: '/profile_5.jpg',
     categories: ['일상 브이로그', '토크'],
     stats: {
@@ -97,10 +85,8 @@ const creatorsData = [
     },
     tags: ['토크', '데일리', '개그', '아웃']
   },
-  {
-    id: 7,
-    name: '할명수',
-    username: 'halmyungsoo@example.com',
+  'halmyungsoo@example.com': {
+    username: '할명수',
     avatar: '/profile_6.jpg',
     categories: ['토크'],
     stats: {
@@ -110,10 +96,8 @@ const creatorsData = [
     },
     tags: ['토크', '먹방']
   },
-  {
-    id: 8,
-    name: '찰스엔터',
-    username: 'charlesenter@example.com',
+  'charlesenter@example.com': {
+    username: '찰스엔터',
     avatar: '/profile_7.jpg',
     categories: ['토크', '일상 브이로그'],
     stats: {
@@ -123,10 +107,8 @@ const creatorsData = [
     },
     tags: ['일상', '리액션', '토크', '먹방']
   },
-  {
-    id: 9,
-    name: '느낌적인느낌',
-    username: 'feellikefeel@example.com',
+  'feellikefeel@example.com': {
+    username: '느낌적인느낌',
     avatar: '/profile_8.jpg',
     categories: ['댄스', '일상 브이로그'],
     stats: {
@@ -136,7 +118,7 @@ const creatorsData = [
     },
     tags: ['뷰티', '데일리', '패션', '아웃']
   }
-];
+};
 
 const CompanyPage = () => {
   const { user, logout } = useAuth();
@@ -150,7 +132,8 @@ const CompanyPage = () => {
   
   // Find Creators 뷰 상태
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredCreators, setFilteredCreators] = useState(creatorsData);
+  const [creatorsData, setCreatorsData] = useState([]);
+  const [filteredCreators, setFilteredCreators] = useState([]);
 
   // Dashboard 뷰 상태
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -173,6 +156,89 @@ const CompanyPage = () => {
   
   // 알림 모달 상태
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
+
+  // 크리에이터 목록 로드 (users.json에서 + 추가 크리에이터)
+  useEffect(() => {
+    const loadCreators = async () => {
+      try {
+        // 1. users.json에서 회원가입된 크리에이터 가져오기
+        let registeredCreators = [];
+        try {
+          const response = await fetch(`${API_BASE_URL}/users/creators`);
+          if (response.ok) {
+            const result = await response.json();
+            registeredCreators = result.data || [];
+          }
+        } catch (error) {
+          console.warn('회원가입된 크리에이터 로드 실패:', error);
+        }
+        
+        // 2. creatorAdditionalInfo에 있는 모든 크리에이터를 기본 목록으로 추가
+        const allCreatorIds = new Set();
+        const creatorsMap = new Map();
+        
+        // 회원가입된 크리에이터 추가
+        registeredCreators.forEach(creator => {
+          allCreatorIds.add(creator.id);
+          creatorsMap.set(creator.id, {
+            id: creator.id,
+            username: creator.username,
+            ...(creatorAdditionalInfo[creator.id] || {})
+          });
+        });
+        
+        // creatorAdditionalInfo에 있는 모든 크리에이터 추가 (회원가입 여부와 관계없이)
+        Object.keys(creatorAdditionalInfo).forEach(creatorId => {
+          if (!allCreatorIds.has(creatorId)) {
+            const additionalInfo = creatorAdditionalInfo[creatorId];
+            // username이 없으면 id에서 추출
+            const username = additionalInfo.username || (() => {
+              const usernameFromId = creatorId.split('@')[0];
+              return usernameFromId.charAt(0).toUpperCase() + usernameFromId.slice(1);
+            })();
+            
+            creatorsMap.set(creatorId, {
+              id: creatorId,
+              username: username,
+              ...additionalInfo
+            });
+          }
+        });
+        
+        // Map을 배열로 변환
+        const allCreators = Array.from(creatorsMap.values());
+        
+        // 기본 정보가 없는 크리에이터에 기본값 추가
+        const creatorsWithInfo = allCreators.map((creator, index) => {
+          if (!creator.avatar) {
+            return {
+              ...creator,
+              avatar: `/profile_${(index % 8) + 1}.jpg`,
+              categories: creator.categories || ['일상 브이로그'],
+              stats: creator.stats || {
+                youtube: '0',
+                instagram: '0',
+                avgViews: '평균 0'
+              },
+              tags: creator.tags || ['크리에이터']
+            };
+          }
+          return creator;
+        });
+        
+        setCreatorsData(creatorsWithInfo);
+        setFilteredCreators(creatorsWithInfo);
+        console.log(`✅ 크리에이터 목록 로드: ${creatorsWithInfo.length}명 (회원가입: ${registeredCreators.length}명, 추가: ${creatorsWithInfo.length - registeredCreators.length}명)`);
+      } catch (error) {
+        console.error('크리에이터 목록 로드 실패:', error);
+        // 기본값으로 빈 배열 설정
+        setCreatorsData([]);
+        setFilteredCreators([]);
+      }
+    };
+
+    loadCreators();
+  }, []);
 
   // localStorage에서 프로필 데이터 로드
   useEffect(() => {
@@ -267,18 +333,18 @@ const CompanyPage = () => {
   // Dashboard 함수들
   const loadAnalysisHistory = useCallback(async () => {
     try {
-      // 사용자 정보를 쿼리 파라미터로 전달
-      const username = user?.username;
-      const url = username 
-        ? `${API_BASE_URL}/analysis/history?limit=20&username=${encodeURIComponent(username)}`
+      // 사용자 정보를 쿼리 파라미터로 전달 (id 사용)
+      const userId = user?.id;
+      const url = userId 
+        ? `${API_BASE_URL}/analysis/history?limit=20&username=${encodeURIComponent(userId)}`
         : `${API_BASE_URL}/analysis/history?limit=20`;
       
-      console.log(`📊 분석 히스토리 로드 중... (사용자: ${username})`);
+      console.log(`📊 분석 히스토리 로드 중... (사용자 id: ${userId}, 이름: ${user?.username})`);
       const response = await fetch(url);
       
       if (response.ok) {
         const data = await response.json();
-        console.log(`✅ ${username}의 분석 결과 ${data.data?.length || 0}개 로드`);
+        console.log(`✅ ${user?.username}의 분석 결과 ${data.data?.length || 0}개 로드`);
         setAnalysisHistory(data.data || []);
         if (data.data && data.data.length > 0) {
           setAnalysisResults(data.data[0]);
@@ -287,7 +353,7 @@ const CompanyPage = () => {
     } catch (error) {
       console.error('분석 히스토리 로드 실패:', error);
     }
-  }, [user?.username]);
+  }, [user?.id, user?.username]);
 
   useEffect(() => {
     if (activeView === 'dashboard') {
@@ -334,10 +400,10 @@ const CompanyPage = () => {
 
   const handleDeleteAnalysis = async (analysisId) => {
     try {
-      // 사용자 정보를 쿼리 파라미터로 전달
-      const username = user?.username;
-      const url = username
-        ? `${API_BASE_URL}/analysis/${analysisId}?username=${encodeURIComponent(username)}`
+      // 사용자 정보를 쿼리 파라미터로 전달 (id 사용)
+      const userId = user?.id;
+      const url = userId
+        ? `${API_BASE_URL}/analysis/${analysisId}?username=${encodeURIComponent(userId)}`
         : `${API_BASE_URL}/analysis/${analysisId}`;
       
       const response = await fetch(url, {
@@ -391,8 +457,8 @@ const CompanyPage = () => {
       setFilteredCreators(creatorsData);
     } else {
       const filtered = creatorsData.filter(creator => 
-        creator.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         creator.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        creator.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
         creator.categories.some(cat => cat.toLowerCase().includes(searchQuery.toLowerCase())) ||
         creator.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
       );

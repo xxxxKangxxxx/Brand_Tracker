@@ -50,7 +50,13 @@ class AnalysisStorageService:
             print(f"데이터 저장 오류: {str(e)}")
     
     def save_analysis(self, analysis_data: Dict, analysis_type: str = "youtube", username: str = None) -> str:
-        """분석 결과를 저장합니다."""
+        """분석 결과를 저장합니다.
+        
+        Args:
+            analysis_data: 분석 결과 데이터
+            analysis_type: 분석 타입 (youtube, upload)
+            username: 사용자 id (이메일) - username 필드에 저장됨
+        """
         try:
             data = self._load_data()
             
@@ -60,7 +66,7 @@ class AnalysisStorageService:
             # 분석 결과 데이터 구성
             analysis_record = {
                 "id": analysis_id,
-                "username": username,  # 사용자 정보 추가
+                "username": username,  # 사용자 id (이메일) 저장 - users.json의 id와 일치해야 함
                 "type": analysis_type,
                 "timestamp": datetime.now().isoformat(),
                 "video_info": analysis_data.get("video_info", {}),
@@ -123,15 +129,20 @@ class AnalysisStorageService:
         }
     
     def get_analysis_history(self, limit: int = 20, username: str = None) -> List[Dict]:
-        """분석 히스토리를 가져옵니다."""
+        """분석 히스토리를 가져옵니다.
+        
+        Args:
+            limit: 반환할 최대 개수
+            username: 사용자 id (이메일) - username 필드에 id가 저장되어 있음
+        """
         try:
             data = self._load_data()
             analyses = data.get("analyses", [])
             
-            # 사용자별 필터링
+            # 사용자별 필터링 (username 필드에 실제로는 id가 저장됨)
             if username:
                 analyses = [analysis for analysis in analyses if analysis.get("username") == username]
-                print(f"📊 사용자 '{username}'의 분석 결과: {len(analyses)}개")
+                print(f"📊 사용자 id '{username}'의 분석 결과: {len(analyses)}개")
             
             # 최신순으로 정렬하여 반환
             return sorted(analyses, key=lambda x: x["timestamp"], reverse=True)[:limit]

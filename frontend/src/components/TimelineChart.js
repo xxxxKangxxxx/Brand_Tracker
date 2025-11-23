@@ -21,6 +21,11 @@ const TimelineChart = ({ data }) => {
     
     // 모든 타임스탬프와 신뢰도 수집
     Object.entries(data).forEach(([brand, brandData]) => {
+      // timestamps가 없으면 타임라인을 생성할 수 없음
+      if (!brandData || !brandData.timestamps || !Array.isArray(brandData.timestamps)) {
+        return;
+      }
+      
       brandData.timestamps.forEach((timestamp, index) => {
         allTimestamps.push({
           time: timestamp,
@@ -29,6 +34,11 @@ const TimelineChart = ({ data }) => {
         });
       });
     });
+    
+    // timestamps가 없으면 빈 타임라인 반환
+    if (allTimestamps.length === 0) {
+      return [];
+    }
     
     // 시간순 정렬
     allTimestamps.sort((a, b) => a.time - b.time);
@@ -64,6 +74,20 @@ const TimelineChart = ({ data }) => {
   };
 
   const timelineData = createTimelineData();
+  
+  // 타임라인 데이터가 없으면 빈 상태 표시
+  if (!timelineData || timelineData.length === 0) {
+    return (
+      <div className="chart-empty">
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '3rem', marginBottom: '1rem', opacity: 0.3 }}>📊</div>
+          <p style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>타임라인 데이터가 없습니다</p>
+          <p style={{ fontSize: '0.9rem', opacity: 0.7 }}>타임스탬프 정보가 포함된 분석 결과가 필요합니다</p>
+        </div>
+      </div>
+    );
+  }
+  
   const brands = Object.keys(data);
   
   // 브랜드별 색상 (더 다양하고 구분하기 쉬운 색상)
@@ -108,7 +132,7 @@ const TimelineChart = ({ data }) => {
 
   return (
     <div className="timeline-chart" style={{ overflowX: 'auto' }}>
-      <ResponsiveContainer width={480} height={350}>
+      <ResponsiveContainer width={600} height={350}>
         <AreaChart data={timelineData} margin={{ top: 20, right: 5, left: 5, bottom: 5 }}>
           <defs>
             {brands.map((brand, index) => (

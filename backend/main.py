@@ -373,11 +373,37 @@ async def get_model_status():
 async def health_check():
     return {"status": "healthy", "timestamp": datetime.now().isoformat()}
 
+@app.get("/users/creators")
+async def get_creators():
+    """크리에이터 목록을 가져옵니다."""
+    try:
+        users = load_users()
+        creators = []
+        for user_id, user_data in users.items():
+            if user_data.get("user_type") == "creator":
+                creators.append({
+                    "id": user_data.get("id"),
+                    "username": user_data.get("username"),
+                    "user_type": user_data.get("user_type"),
+                    "created_at": user_data.get("created_at")
+                })
+        return {
+            "status": "success",
+            "data": creators
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"크리에이터 목록 조회 오류: {str(e)}")
+
 @app.get("/analysis/history")
 async def get_analysis_history(limit: int = 20, username: str = None):
-    """분석 히스토리를 조회합니다."""
+    """분석 히스토리를 조회합니다.
+    
+    Args:
+        limit: 반환할 최대 개수
+        username: 사용자 id (이메일) - users.json의 id와 일치해야 함
+    """
     try:
-        print(f"📊 [히스토리 조회] 사용자: {username}, 제한: {limit}")
+        print(f"📊 [히스토리 조회] 사용자 id: {username}, 제한: {limit}")
         history = storage_service.get_analysis_history(limit, username)
         return {
             "status": "success",
